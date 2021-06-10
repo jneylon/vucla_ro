@@ -29,7 +29,7 @@
         class="text-center white--text"
         cols="12"
         >
-          <h3>Comments, Questions or Requests?</h3>
+          <h3>Comments, Questions, or Requests?</h3>
           <br>Address all comments to <strong>Jack Neylon, PhD, DABR  |  jneylon@mednet.ucla.edu</strong>
         </v-col>
     </v-footer>

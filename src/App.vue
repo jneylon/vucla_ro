@@ -37,15 +37,19 @@
             >
             <v-list-item @click="navdrawer=false">
               <v-list-item-icon><v-icon>{{ wafer_icons[0] }}</v-icon></v-list-item-icon>
-              <v-list-item-title>Home</v-list-item-title>
+              <v-list-item-title>{{ wafer_title[0] }}</v-list-item-title>
             </v-list-item>
             <v-list-item @click="navdrawer=false">
               <v-list-item-icon><v-icon>{{ wafer_icons[1] }}</v-icon></v-list-item-icon>
-              <v-list-item-title>Bravos_SM Decay Table</v-list-item-title>
+              <v-list-item-title>{{ wafer_title[1] }}</v-list-item-title>
             </v-list-item>
             <v-list-item @click="navdrawer=false">
               <v-list-item-icon><v-icon>{{ wafer_icons[2] }}</v-icon></v-list-item-icon>
-              <v-list-item-title>Bravos_SM TG43 Calc</v-list-item-title>
+              <v-list-item-title>{{ wafer_title[2] }}</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="navdrawer=false">
+              <v-list-item-icon><v-icon>{{ wafer_icons[3] }}</v-icon></v-list-item-icon>
+              <v-list-item-title>{{ wafer_title[3] }}</v-list-item-title>
             </v-list-item>
           </v-list-item-group>
       </v-list>
@@ -54,6 +58,7 @@
       <HelloUCLARO v-if="vindex == 0"></HelloUCLARO>
       <DecayTable v-if="vindex == 1"></DecayTable>
       <TG43 v-if="vindex == 2"></TG43>
+      <TLog v-if="vindex == 3"></TLog>
     </v-main>
   </v-app>
 </template>
@@ -62,6 +67,7 @@
 import HelloUCLARO from './components/HelloUCLARO';
 import DecayTable from './components/DecayTable';
 import TG43 from './components/TG43';
+import TLog from './components/TLog';
 
 export default {
   name: 'App',
@@ -70,15 +76,18 @@ export default {
     HelloUCLARO,
     DecayTable,
     TG43,
+    TLog,
   },
 
   data: () => ({
     wafer_title: ['Home',
                   'Bravos_SM Decay Table',
-                  'Bravos_SM TG43 Calc'],
+                  'Bravos_SM TG43 Calc',
+                  'TrueBeam Trajectory Log Analyzer'],
     wafer_icons: ['mdi-home',
                   'mdi-timer-sand',
-                  'mdi-atom'],
+                  'mdi-atom',
+                  'mdi-cog-outline'],
     navdrawer: false,
     vindex: 0,
   }),

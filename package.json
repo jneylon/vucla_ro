@@ -9,6 +9,9 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
+    "jdataview": "^2.5.0",
+    "plotly.js-dist": "^2.0.0",
+    "serve": "^12.0.0",
     "vue": "^2.6.11",
     "vuetify": "^2.4.0"
   },
