@@ -2,6 +2,7 @@
   "name": "vucla_ro",
   "version": "0.1.0",
   "private": true,
+  "author": "Jack Neylon, PhD, DABR",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build",
@@ -13,6 +14,7 @@
     "plotly.js-dist": "^2.0.0",
     "serve": "^12.0.0",
     "vue": "^2.6.11",
+    "vue-router": "^3.5.2",
     "vuetify": "^2.4.0"
   },
   "devDependencies": {

@@ -1,5 +1,5 @@
 <template>
-  <div id="tg43">
+    <div id="tg43">
         <v-navigation-drawer 
             app 
             floating 
@@ -37,11 +37,10 @@
                 </v-card-text>
             </v-card>
         </v-navigation-drawer>
-        <v-container>
-            <div class="d-print-none" v-show="!analyzed">
-                <br>
-                <v-row align="center" justify="center">
-                    <v-card width="95%" height="230" outlined :loading=loading>
+        <v-container justify="center" align="center">
+            <v-row class="d-print-none">
+                <v-col>
+                    <v-card outlined :loading=loading>
                         <v-card-title>JSON File Parser:</v-card-title>
                         <v-card-text>
                             <v-file-input 
@@ -54,74 +53,87 @@
                         <v-card-actions>
                             <v-btn 
                                 rounded 
-                                color="deep-purple accent-4" 
+                                color="#2774AE"
                                 dark 
                                 @click="loading=true,importJSON()">Import TG43 JSON File</v-btn>
                         </v-card-actions>
                         <template slot="progress">
                             <v-progress-linear
-                                color="deep-purple accent-4"
+                                color="#2774AE"
                                 :indeterminate="loading"
                                 rounded
                                 height="6"
                             ></v-progress-linear>
                         </template>
                     </v-card>
-                </v-row>
-            </div>
-            <br>
-            <div align="center">
-                <h2>UCLA Radiation Oncology - HDR Basic Dosimetry Calculation for Varian Bravos</h2>
-            </div>
-            <br>
-            <div style="page-break-after: always;" class="d-print-block">
-                <v-row align="center" justify="center">
-                    <v-card width="95%" height="215" outlined>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col>
+                    <h2 style="text-align:center;">UCLA Radiation Oncology</h2>
+                    <h2 style="text-align:center;">HDR Basic Dosimetry Calculation for Varian Bravos</h2>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col>
+                    <v-card outlined>
                         <v-card-title><h4>Patient & Plan Information:</h4></v-card-title>
                         <v-card-text>
                             <v-row>
                                 <v-col>
                                     <v-card>
-                                        <v-card-text><b>Patient:     </b>{{ patient }}</v-card-text>
+                                        <v-card-text class="d-flex justify-space-between">
+                                            <b>Patient:</b>
+                                            {{ patient }}
+                                        </v-card-text>
                                     </v-card>
                                 </v-col>
                                 <v-col>
                                     <v-card>
-                                        <v-card-text><b>MRN:     </b>{{ mrn }}</v-card-text>
+                                        <v-card-text class="d-flex justify-space-between">
+                                            <b>MRN:</b>
+                                            {{ mrn }}
+                                        </v-card-text>
                                     </v-card>
                                 </v-col>
                             </v-row>
                             <v-row>
                                 <v-col>
                                     <v-card>
-                                        <v-card-text><b>Plan:     </b>{{ plan }}</v-card-text>
+                                        <v-card-text class="d-flex justify-space-between">
+                                            <b>Plan:</b>
+                                            {{ plan }}
+                                        </v-card-text>
                                     </v-card>
                                 </v-col>
                                 <v-col>
                                     <v-card>
-                                        <v-card-text><b>Rx Dose Per Fraction:     </b>{{ rx_dose }}</v-card-text>
+                                        <v-card-text class="d-flex justify-space-between">
+                                            <b>Rx Dose Per Fraction:</b>
+                                            {{ rx_dose }}
+                                        </v-card-text>
                                     </v-card>
                                 </v-col>
                             </v-row>
                         </v-card-text>
                     </v-card>
-                </v-row>
-                <v-row align="center" justify="center">
-                    <v-card width="95%" height="325" outlined>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col>
+                    <v-card outlined>
                         <v-card-title><h4>Bravos_SM Source Data</h4></v-card-title>
-                        <v-card-subtitle><b>Source Serial No: {{ source.serial }}.</b><br>Dose Rate Constant: {{ lambda }} cGy / h / U</v-card-subtitle>
+                        <v-card-subtitle class="d-flex justify-space-between">
+                            <div><b>Source Serial No: </b>{{ source.serial }}</div>
+                            <div><b>Dose Rate Constant: </b>{{ lambda }} cGy / h / U</div>
+                        </v-card-subtitle>
                         <v-card-text>
-                            <v-simple-table dense>
-                                <template v-slot:default>
-                                    <tbody>
-                                        <tr>
-                                            <th style="width:25%;" class="text-center"><h3>Calibration Activity</h3>Cal. Date: {{ calibration | format_datestring }}</th>
-                                            <th style="width:25%;" class="text-center"><h3>Plan Activity</h3>10 Ci Date: {{ ten_ci | format_datestring }}</th>
-                                            <th style="width:25%;" class="text-center"><h3>Treatment Activity</h3>Tx Date: {{ current.date }}</th>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-center">
-                                                <v-progress-circular
+                            <v-row>
+                                <v-col>
+                                    <v-card style="text-align:center;">
+                                        <h3>Calibration Activity</h3>
+                                        <p>Cal. Date: {{ calibration | format_datestring }}</p>
+                                        <v-progress-circular
                                                     rotate="-90"
                                                     size="90"
                                                     width="10"
@@ -129,63 +141,54 @@
                                                     color="teal"
                                                     >
                                                     <h3>{{ source.curie | onlysigfigs(2) }} Ci</h3>
-                                                </v-progress-circular>
-                                            </td>
-                                            <td class="text-center">
-                                                <v-progress-circular
-                                                    rotate="-90"
-                                                    size="90"
-                                                    width="10"
-                                                    :value="tenci_progress"
-                                                    color="purple"
-                                                    >
-                                                    <h3>10.00 Ci</h3>
-                                                </v-progress-circular>
-                                            </td>
-                                            <td class="text-center">
-                                                <v-progress-circular
-                                                    rotate="-90"
-                                                    size="90"
-                                                    width="10"
-                                                    :value="decay_progress"
-                                                    color="primary"
-                                                    >
-                                                    <h3>{{ decay_activity | onlysigfigs(2) }} Ci</h3>
-                                                </v-progress-circular>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </template>
-                            </v-simple-table>
-                            <br>
-                            <v-row>
-                                <v-col>
-                                    <v-card>
-                                        <v-card-text><h4><b>Total Ci-s:    </b>{{ scaled_cis | onlysigfigs(2) }}</h4></v-card-text>
+                                        </v-progress-circular>
+                                        <v-card-text><h4><b>Total Ci-s: </b>{{ scaled_cis | onlysigfigs(2) }}</h4></v-card-text>
                                     </v-card>
                                 </v-col>
                                 <v-col>
-                                    <v-card>
-                                        <v-card-text><h4><b>Planned Tx Time:    </b>{{ tx_time | onlysigfigs(2) }} s</h4></v-card-text>
+                                    <v-card style="text-align:center;">
+                                        <h3>Plan Activity</h3>
+                                        <p>10 Ci Date: {{ ten_ci | format_datestring }}</p>
+                                        <v-progress-circular
+                                            rotate="-90"
+                                            size="90"
+                                            width="10"
+                                            :value="tenci_progress"
+                                            color="purple"
+                                            >
+                                            <h3>10.00 Ci</h3>
+                                        </v-progress-circular>
+                                        <v-card-text><h4><b>Planned Tx Time: </b>{{ tx_time | onlysigfigs(2) }} s</h4></v-card-text>
                                     </v-card>
                                 </v-col>
                                 <v-col>
-                                    <v-card>
-                                        <v-card-text><h4><b>Scaled Tx Time:    </b>{{ scaled_tx_time | onlysigfigs(2) }} s</h4></v-card-text>
+                                    <v-card style="text-align:center;">
+                                        <h3>Treatment Activity</h3>
+                                        <p>Tx Date: {{ current.date }}</p>
+                                        <v-progress-circular
+                                            rotate="-90"
+                                            size="90"
+                                            width="10"
+                                            :value="decay_progress"
+                                            color="primary"
+                                            >
+                                            <h3>{{ decay_activity | onlysigfigs(2) }} Ci</h3>
+                                        </v-progress-circular>
+                                        <v-card-text><h4><b>Scaled Tx Time: </b>{{ scaled_tx_time | onlysigfigs(2) }} s</h4></v-card-text>
                                     </v-card>
                                 </v-col>
                             </v-row>
                         </v-card-text>
                     </v-card>
-                </v-row>
-                <v-row align="center" justify="center">
-                    <v-card width="95%" height="380" outlined>
+                </v-col>
+            </v-row>
+            <v-row v-show="analyzed">
+                <v-col>
+                    <v-card outlined>
                         <v-card-title><h4>Plan Calculation Points for Verification:</h4></v-card-title>
                         <v-card-subtitle>{{ prp_counter }} reference points with physical locations identified.</v-card-subtitle>
                         <v-card-text>
-                            <template>
                                 <v-simple-table dense>
-                                    <template v-slot:default>
                                     <thead>
                                         <tr>
                                             <th class="text-left"><b>Ref Point ID</b></th>
@@ -208,20 +211,16 @@
                                             <td class="no-print text-center"><v-icon @click="calcpt.show=!calcpt.show; toggle_icons()">{{ calcpt.icon }}</v-icon></td>
                                         </tr>
                                     </tbody>
-                                    </template>
                                 </v-simple-table>
-                            </template>
                         </v-card-text>
                     </v-card>
-                </v-row>
-            </div>
+                </v-col>
+            </v-row>
         </v-container>
   </div>
 </template>
 
 <script>
-import jsource from '../assets/source.json'
-
 export default {
     name: 'TG43',
     data() {
@@ -258,10 +257,19 @@ export default {
                 'Fail': "red--text",
                 'mdi-eye-off': "text--disabled text-decoration-line-through font-italic no-print",
             },
-            source: jsource,
+            source: {},
         }
     },
-      methods: {
+    mounted() {
+        fetch("/api/bravos_sources/active")
+            .then(response => response.json())
+            .then(result => {
+                console.log(result);
+                this.source = result.source[0];
+                console.log(this.source);
+            })
+    },
+    methods: {
         allowedStep: m => m % 5 === 0,
         interp_radial(distance) {
             var low_index = this.radial.counter-2;
@@ -314,6 +322,7 @@ export default {
                 this.dwells = this.json.dwells;
                 //console.log(this.dwells);
 
+                this.ref_calcs = [];
                 for (let r = 0; r < this.rp_counter; r++) 
                 {
                     var dose_sum = 0.0;
@@ -380,10 +389,10 @@ export default {
             return _now;
         },
         calibration () {
-            return new Date(this.source.calibration.year,this.source.calibration.month,this.source.calibration.day,this.source.calibration.hour);
+            return new Date(this.source.calibration);
         },
         ten_ci () {
-            return new Date(this.source.ten_ci_date.year,this.source.ten_ci_date.month,this.source.ten_ci_date.day);
+            return new Date(this.source.ten_ci_date);
         },
         elapsed_days () {
             var now_time = this.now_date.getTime();

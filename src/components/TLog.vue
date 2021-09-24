@@ -20,23 +20,26 @@
                 <v-list-item>
                     <v-btn 
                         rounded 
-                        color="deep-purple accent-4" 
+                        color="#2774AE"
                         dark 
+                        block
                         @click="loading=true,parseFilename(),importBinary()">Import File</v-btn>
                 </v-list-item>
                 <v-list-item>
                     <v-btn 
                         rounded 
-                        color="deep-purple accent-4" 
+                        color="#2774AE"
                         dark 
+                        block
                         :disabled="!imported"
                         @click="analyzing=true,analyzeLogs(),generateCharts()">Analyze Log</v-btn>
                 </v-list-item>
                 <v-list-item>
                     <v-btn 
                         rounded 
-                        color="deep-purple accent-4"  
+                        color="#2774AE" 
                         dark 
+                        block
                         :disabled="!analyzed"
                         @click="minimize=true"
                         onclick="window.print()">Print to PDF</v-btn>
@@ -79,59 +82,58 @@
                 <v-list-item>
                     <v-switch 
                         v-model="p_switch1" 
-                        color="indigo"
+                        color="#2774AE"
                         label="Leaf Pos. Error Histogram">
                     </v-switch>
                 </v-list-item>
                 <v-list-item>
                     <v-switch 
                         v-model="p_switch2" 
-                        color="indigo"
+                        color="#2774AE"
                         label="Leaf Speed Error Histogram">
                     </v-switch>
                 </v-list-item>
                 <v-list-item>
                     <v-switch 
                         v-model="p_switch4" 
-                        color="indigo"
+                        color="#2774AE"
                         label="MU Comparison Plot">
                     </v-switch>
                 </v-list-item>
                 <v-list-item>
                     <v-switch 
                         v-model="p_switch3" 
-                        color="indigo"
+                        color="#2774AE"
                         label="Position Error per Leaf">
                     </v-switch>
                 </v-list-item>
                 <v-list-item>
                     <v-switch 
                         v-model="p_switch5" 
-                        color="indigo"
+                        color="#2774AE"
                         label="Speed Error per Leaf">
                     </v-switch>
                 </v-list-item>
                 <v-list-item>
                     <v-switch 
                         v-model="p_switch6" 
-                        color="indigo"
+                        color="#2774AE"
                         label="BEV of the MLC">
                     </v-switch>
                 </v-list-item>
                 <v-list-item>
                     <v-switch 
                         v-model="t_switch1" 
-                        color="indigo"
+                        color="#2774AE"
                         label="Results Data Table">
                     </v-switch>
                 </v-list-item>
             </v-list>
         </v-navigation-drawer>
         <v-container>
-            <div class="hidden-print-only">
-                <br>
-                <v-row align="center" justify="center">
-                    <v-card width="95%" height="150" outlined>
+            <v-row class="hidden-print-only">
+                <v-col cols="12">
+                    <v-card outlined>
                         <v-card-title>Trajectory Log File Analysis:</v-card-title>
                         <v-card-text>
                             <v-file-input 
@@ -141,121 +143,136 @@
                                 v-model="chosenFile">
                             </v-file-input>
                         </v-card-text>
-                    </v-card>
-                </v-row>
-                <v-row align="center" justify="center">
-                    <v-card width="95%" height="6" justify="center" raised>
                         <v-progress-linear
-                            color="deep-purple accent-4"
-                            :indeterminate="loading"
-                            rounded
-                            height="6"
+                                color="#2774AE"
+                                :indeterminate="loading"
+                                rounded
+                                height="6"
                         ></v-progress-linear>
                     </v-card>
-                </v-row>
-                <br>
-            </div>
-            <div style="page-break-after: always;" v-show="imported" class="d-print-block">
-                <v-row align="center" justify="center">
-                    <v-card width="95%" height="600" outlined>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col cols="12">
+                    <h2 style="text-align:center;">UCLA Radiation Oncology</h2>
+                    <h2 style="text-align:center;">Varian Truebeam Tracjectory Log File Analysis</h2>
+                </v-col>
+            </v-row>
+            <v-row style="page-break-after:always;">
+                <v-col cols="12">
+                    <v-card outlined>
                         <v-card-title>Plan Information:</v-card-title>
                         <v-card-text>
                             <v-simple-table dense>
-                                <template v-slot:default>
-                                    <tbody>
-                                        <tr>
-                                            <td>Patient ID:</td>
-                                            <td>{{ patient }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Plan Name:</td>
-                                            <td>{{ plan }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Date:</td>
-                                            <td>{{ date }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Time:</td>
-                                            <td>{{ time }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Field Name:</td>
-                                            <td>{{ field }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Total MU:</td>
-                                            <td>{{ total_mu | onlysigfigs(2) }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Gantry Rotation (deg):</td>
-                                            <td>{{ actual.gantry | onlysigfigs(3) }} <b>/ {{ expected.gantry | onlysigfigs(2) }}</b></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Collimator Rotation (deg):</td>
-                                            <td>{{ actual.collimator | onlysigfigs(3) }} <b>/ {{ expected.collimator | onlysigfigs(2) }}</b></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Field Size:</td>
-                                            <td>X:&emsp; {{ actual.jaw.x | onlysigfigs(2) }} <b>/ {{ expected.jaw.x | onlysigfigs(2) }}</b>
-                                            <br>Y:&emsp; {{ actual.jaw.y | onlysigfigs(2) }} <b>/ {{ expected.jaw.y | onlysigfigs(2) }}</b></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Jaws:</td>
-                                            <td>X1:&emsp; {{ actual.jaw.x1 | onlysigfigs(2) }} <b>/ {{ expected.jaw.x1 | onlysigfigs(2) }}</b>
-                                            <br>X2:&emsp; {{ actual.jaw.x2 | onlysigfigs(2) }} <b>/ {{ expected.jaw.x2 | onlysigfigs(2) }}</b>
-                                            <br>Y1:&emsp; {{ actual.jaw.y1 | onlysigfigs(2) }} <b>/ {{ expected.jaw.y1 | onlysigfigs(2) }}</b>
-                                            <br>Y2:&emsp; {{ actual.jaw.y2 | onlysigfigs(2) }} <b>/ {{ expected.jaw.y2 | onlysigfigs(2) }}</b></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Couch:</td>
-                                            <td>Lat:&emsp; {{ actual.couch.lat | onlysigfigs(2) }} <b>/ {{ expected.couch.lat | onlysigfigs(2) }}</b>
-                                            <br>Long:&emsp; {{ actual.couch.long | onlysigfigs(2) }} <b>/ {{ expected.couch.long | onlysigfigs(2) }}</b>
-                                            <br>Vert:&emsp; {{ actual.couch.vert | onlysigfigs(2) }} <b>/ {{ expected.couch.vert | onlysigfigs(2) }}</b>
-                                            <br>Rot:&emsp; {{ actual.couch.rot | onlysigfigs(2) }} <b>/ {{ expected.couch.rot | onlysigfigs(2) }}</b></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Results:</td>
-                                            <td v-show="analyzed">Leaf Position:&emsp;<b :class="error.max_pos | setToleranceFont(toler.pos)"> {{ error.max_pos | checkTolerance(toler.pos) }}</b>
-                                            <br>Leaf Speed:&emsp;<b :class="error.max_vel | setToleranceFont(toler.vel)"> {{ error.max_vel | checkTolerance(toler.vel) }}</b></td>
-                                            <td v-show="!analyzed"><b>{{ message }}</b></td>
-                                        </tr>
-                                    </tbody>
-                                </template>
+                                <tbody>
+                                    <tr>
+                                        <td>Patient ID:</td>
+                                        <td>{{ patient }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Plan Name:</td>
+                                        <td>{{ plan }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Date:</td>
+                                        <td>{{ date }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Time:</td>
+                                        <td>{{ time }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Field Name:</td>
+                                        <td>{{ field }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Total MU:</td>
+                                        <td>{{ total_mu | onlysigfigs(2) }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Gantry Rotation (deg):</td>
+                                        <td>{{ actual.gantry | onlysigfigs(3) }} <b>/ {{ expected.gantry | onlysigfigs(2) }}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Collimator Rotation (deg):</td>
+                                        <td>{{ actual.collimator | onlysigfigs(3) }} <b>/ {{ expected.collimator | onlysigfigs(2) }}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Field Size:</td>
+                                        <td>X:&emsp; {{ actual.jaw.x | onlysigfigs(2) }} <b>/ {{ expected.jaw.x | onlysigfigs(2) }}</b>
+                                        <br>Y:&emsp; {{ actual.jaw.y | onlysigfigs(2) }} <b>/ {{ expected.jaw.y | onlysigfigs(2) }}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Jaws:</td>
+                                        <td>X1:&emsp; {{ actual.jaw.x1 | onlysigfigs(2) }} <b>/ {{ expected.jaw.x1 | onlysigfigs(2) }}</b>
+                                        <br>X2:&emsp; {{ actual.jaw.x2 | onlysigfigs(2) }} <b>/ {{ expected.jaw.x2 | onlysigfigs(2) }}</b>
+                                        <br>Y1:&emsp; {{ actual.jaw.y1 | onlysigfigs(2) }} <b>/ {{ expected.jaw.y1 | onlysigfigs(2) }}</b>
+                                        <br>Y2:&emsp; {{ actual.jaw.y2 | onlysigfigs(2) }} <b>/ {{ expected.jaw.y2 | onlysigfigs(2) }}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Couch:</td>
+                                        <td>Lat:&emsp; {{ actual.couch.lat | onlysigfigs(2) }} <b>/ {{ expected.couch.lat | onlysigfigs(2) }}</b>
+                                        <br>Long:&emsp; {{ actual.couch.long | onlysigfigs(2) }} <b>/ {{ expected.couch.long | onlysigfigs(2) }}</b>
+                                        <br>Vert:&emsp; {{ actual.couch.vert | onlysigfigs(2) }} <b>/ {{ expected.couch.vert | onlysigfigs(2) }}</b>
+                                        <br>Rot:&emsp; {{ actual.couch.rot | onlysigfigs(2) }} <b>/ {{ expected.couch.rot | onlysigfigs(2) }}</b></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Results:</td>
+                                        <td v-show="analyzed">Leaf Position:&emsp;<b :class="error.max_pos | setToleranceFont(toler.pos)"> {{ error.max_pos | checkTolerance(toler.pos) }}</b>
+                                        <br>Leaf Speed:&emsp;<b :class="error.max_vel | setToleranceFont(toler.vel)"> {{ error.max_vel | checkTolerance(toler.vel) }}</b></td>
+                                        <td v-show="!analyzed"><b>{{ message }}</b></td>
+                                    </tr>
+                                </tbody>
                             </v-simple-table>
                         </v-card-text>
-                    </v-card>
-                </v-row>
-                <v-row align="center" justify="center" class="d-print-none">
-                    <v-card width="95%" height="6" justify="center" raised>
                         <v-progress-linear
-                            color="deep-purple accent-4"
+                            class="d-print-none"
+                            color="#2774AE"
                             :indeterminate="analyzing"
                             rounded
                             height="6"
                         ></v-progress-linear>
                     </v-card>
-                </v-row>
-                <br>
-            </div>
-            <div style="page-break-after: always;" v-show="analyzed" class="d-print-block">
-                <v-row align="center" justify="center" v-show="p_switch1">
-                        <div id='histo_max_pos'></div>
-                </v-row>
-                <v-row align="center" justify="center" v-show="p_switch2" >
-                    <div id='histo_max_vel'></div>
-                </v-row>
-                <v-row align="center" justify="center" v-show="p_switch4">
-                    <div id='line_mu'></div>
-                </v-row>
-                <v-row align="center" justify="center" v-show="p_switch3">
-                    <div id='bar_rms_p'></div>
-                </v-row>
-                <v-row align="center" justify="center" v-show="p_switch5">
-                    <div id='bar_rms_v'></div>
-                </v-row>
-                <v-row align="center" justify="center" v-show="p_switch6">
-                    <v-card width="95%" height="935" justify="center" raised>
+                </v-col>
+            </v-row>
+            <v-row v-show="p_switch1 && analyzed" class="nobreak">
+                <v-col cols="12">
+                    <v-card outlined><v-card-text>
+                        <div align="center" id='histo_max_pos'></div>
+                    </v-card-text></v-card>
+                </v-col>
+            </v-row>
+            <v-row v-show="p_switch2 && analyzed" class="nobreak">
+                <v-col cols="12">
+                    <v-card outlined><v-card-text>
+                        <div align="center" id='histo_max_vel'></div>
+                    </v-card-text></v-card>
+                </v-col>
+            </v-row>
+            <v-row v-show="p_switch4 && analyzed" class="nobreak">
+                <v-col cols="12">
+                    <v-card outlined><v-card-text>
+                        <div align="center" id='line_mu'></div>
+                    </v-card-text></v-card>
+                </v-col>
+            </v-row>
+            <v-row v-show="p_switch3 && analyzed" class="nobreak">
+                <v-col cols="12">
+                    <v-card outlined><v-card-text>
+                        <div align="center" id='bar_rms_p'></div>
+                    </v-card-text></v-card>
+                </v-col>
+            </v-row>
+            <v-row v-show="p_switch5 && analyzed" class="nobreak">
+                <v-col cols="12">
+                    <v-card outlined><v-card-text>
+                        <div align="center" id='bar_rms_v'></div>
+                    </v-card-text></v-card>
+                </v-col>
+            </v-row>
+            <v-row v-show="p_switch6 && analyzed" class="nobreak">
+                <v-col cols="12">
+                    <v-card outlined>
                         <v-card-title>Beam's Eye View</v-card-title>
                         <v-card-subtitle>
                             <p>Control Point: {{frame+1}} / {{control_points}}<br>
@@ -307,12 +324,11 @@
                             <v-btn @click="resetAnimation(false)">Go to End</v-btn>
                         </v-card-actions>
                     </v-card>
-                </v-row>
-                <br>
-            </div>
-            <div style="page-break-after: always;" v-show="analyzed" class="d-print-block">
-                <v-row align="center" justify="center" v-show="t_switch1">
-                    <v-card width="95%" height="2250" outlined >
+                </v-col>
+            </v-row>
+            <v-row v-show="t_switch1 && analyzed" class="breakbefore">
+                <v-col cols="12">
+                    <v-card outlined>
                         <v-card-title>Trajectory Log Analysis Results:</v-card-title>
                         <v-card-text> 
                             <h4><b>Maximum Error in MLC Leaf Position:</b> {{ error.max_pos | onlysigfigs(4) }} cm  (Leaf {{ error.max_pos_leaf }}{{ error.max_pos_bank}})</h4>
@@ -322,46 +338,42 @@
                             <h4><b>Average RMS Error in MLC Leaf Speed:</b> {{ error.rms_vel | onlysigfigs(4) }} cm/s</h4>
                             <br>
                             <h3>Leaf Pass/Fail Status</h3>
-                            <template>
-                                <v-simple-table dense>
-                                    <template v-slot:default>
-                                    <thead>
-                                        <tr>
-                                        <th class="text-left"><b>Leaf Number</b></th>
-                                        <th class="text-left"><b>Bank A Max Pos. Error (cm)</b></th>
-                                        <!-- <th class="text-left"><b>Bank A RMS Error (cm)</b></th> -->
-                                        <th class="text-left"><b>Bank A Max Speed Error (cm/s)</b></th>
-                                        <!-- <th class="text-left"><b>Bank A RMS Speed Error (cm/s)</b></th> -->
-                                        <th class="text-left"><b>Pass/Fail</b></th>
-                                        <th class="text-left"><b>Bank B Max Pos. Error (cm)</b></th>
-                                        <!-- <th class="text-left"><b>Bank B RMS Error (cm)</b></th> -->
-                                        <th class="text-left"><b>Bank B Max Speed Error (cm/s)</b></th>
-                                        <!-- <th class="text-left"><b>Bank B RMS Speed Error (cm/s)</b></th> -->
-                                        <th class="text-left"><b>Pass/Fail</b></th>
-                                        </tr>
-                                    </thead>
-                                    <tbody v-if="analyzed">
-                                        <tr v-for='index in 60' :key='index'>
-                                        <td><b>{{ index }}</b></td>
-                                        <td>{{ error.leaf_max.pos_a[index-1] | onlysigfigs(4) }}</td>
-                                        <!-- <td>{{ error.leaf_rms.pos_a[index-1] | onlysigfigs(4) }}</td> -->
-                                        <td>{{ error.leaf_max.vel_a[index-1] | onlysigfigs(3) }}</td>
-                                        <!-- <td>{{ error.leaf_rms.vel_a[index-1] | onlysigfigs(3) }}</td> -->
-                                        <td><b>{{ error.leaf_max.pos_a[index-1] | checkTolerance(toler.pos) }}</b></td>
-                                        <td>{{ error.leaf_max.pos_b[index-1] | onlysigfigs(4) }}</td>
-                                        <!-- <td>{{ error.leaf_rms.pos_b[index-1] | onlysigfigs(4) }}</td> -->
-                                        <td>{{ error.leaf_max.vel_b[index-1] | onlysigfigs(3) }}</td>
-                                        <!-- <td>{{ error.leaf_rms.vel_b[index-1] | onlysigfigs(3) }}</td> -->
-                                        <td><b>{{ error.leaf_max.pos_b[index-1] | checkTolerance(toler.pos)  }}</b></td>
-                                        </tr>
-                                    </tbody>
-                                    </template>
-                                </v-simple-table>
-                            </template>
+                            <v-simple-table dense>
+                                <thead>
+                                    <tr>
+                                    <th class="text-left"><b>Leaf Number</b></th>
+                                    <th class="text-left"><b>Bank A Max Pos. Error (cm)</b></th>
+                                    <!-- <th class="text-left"><b>Bank A RMS Error (cm)</b></th> -->
+                                    <th class="text-left"><b>Bank A Max Speed Error (cm/s)</b></th>
+                                    <!-- <th class="text-left"><b>Bank A RMS Speed Error (cm/s)</b></th> -->
+                                    <th class="text-left"><b>Pass/Fail</b></th>
+                                    <th class="text-left"><b>Bank B Max Pos. Error (cm)</b></th>
+                                    <!-- <th class="text-left"><b>Bank B RMS Error (cm)</b></th> -->
+                                    <th class="text-left"><b>Bank B Max Speed Error (cm/s)</b></th>
+                                    <!-- <th class="text-left"><b>Bank B RMS Speed Error (cm/s)</b></th> -->
+                                    <th class="text-left"><b>Pass/Fail</b></th>
+                                    </tr>
+                                </thead>
+                                <tbody v-if="analyzed">
+                                    <tr v-for='index in 60' :key='index'>
+                                    <td><b>{{ index }}</b></td>
+                                    <td>{{ error.leaf_max.pos_a[index-1] | onlysigfigs(4) }}</td>
+                                    <!-- <td>{{ error.leaf_rms.pos_a[index-1] | onlysigfigs(4) }}</td> -->
+                                    <td>{{ error.leaf_max.vel_a[index-1] | onlysigfigs(3) }}</td>
+                                    <!-- <td>{{ error.leaf_rms.vel_a[index-1] | onlysigfigs(3) }}</td> -->
+                                    <td><b>{{ error.leaf_max.pos_a[index-1] | checkTolerance(toler.pos) }}</b></td>
+                                    <td>{{ error.leaf_max.pos_b[index-1] | onlysigfigs(4) }}</td>
+                                    <!-- <td>{{ error.leaf_rms.pos_b[index-1] | onlysigfigs(4) }}</td> -->
+                                    <td>{{ error.leaf_max.vel_b[index-1] | onlysigfigs(3) }}</td>
+                                    <!-- <td>{{ error.leaf_rms.vel_b[index-1] | onlysigfigs(3) }}</td> -->
+                                    <td><b>{{ error.leaf_max.pos_b[index-1] | checkTolerance(toler.pos)  }}</b></td>
+                                    </tr>
+                                </tbody>
+                            </v-simple-table>
                         </v-card-text>
                     </v-card>
-                </v-row>
-            </div>
+                </v-col>
+            </v-row>
         </v-container>
     </div>
 </template>
@@ -391,12 +403,12 @@ export default {
             total_mu: null,
             snaps: null,
             interval: null,
-            t_switch1: true,
+            t_switch1: false,
             p_switch1: false,
             p_switch2: false,
-            p_switch3: false,
+            p_switch3: true,
             p_switch4: false,
-            p_switch5: false,
+            p_switch5: true,
             p_switch6: false,
             frame: 0,
             snap: 0,
@@ -1147,8 +1159,6 @@ export default {
             var layout_pos = {
                 title: 'Leaf Position Error Histogram',
                 autosize: false,
-                width: 860,
-                height: 525,
                 xaxis: {
                     title: 'Error (cm)',
                     showgrid: false,
@@ -1216,8 +1226,6 @@ export default {
             var layout_vel = {
                 title: 'Leaf Speed Error Histogram',
                 autosize: false,
-                width: 860,
-                height: 525,
                 xaxis: {
                     title: 'Error (cm/s)',
                     showgrid: false,
@@ -1272,8 +1280,6 @@ export default {
             var layout_mu = {
                 title: 'Gating Analysis of Delivered MU',
                 autosize: false,
-                width: 860,
-                height: 525,
                 legend: {
                     x: 1,
                     xanchor: 'right',
@@ -1363,8 +1369,6 @@ export default {
             var layout_rms_p = {
                 title: 'Leaf Position Error',
                 autosize: false,
-                width: 860,
-                height: 525,
                 legend: {
                     x: 1,
                     xanchor: 'right',
@@ -1451,8 +1455,6 @@ export default {
             var layout_rms_v = {
                 title: 'Leaf Speed Error',
                 autosize: false,
-                width: 860,
-                height: 525,
                 legend: {
                     x: 1,
                     xanchor: 'right',

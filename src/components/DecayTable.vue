@@ -39,118 +39,133 @@
             </v-card>
         </v-navigation-drawer>
         <v-container>
-            <div align="center">
-                <h2>UCLA Radiation Oncology - Independent Ir-192 Decay Calculation</h2>
-            </div>
-            <br>
-            <div style="page-break-after: always;" class="d-print-block">
-                <br>
-                <v-row align="center" justify="center">
-                    <v-card width="95%" height="275" outlined>
+            <v-row>
+                <v-col>
+                    <h2 style="text-align:center;">UCLA Radiation Oncology</h2>
+                    <h2 style="text-align:center;">HDR Brachytherapy - Independent Ir-192 Decay Calculation</h2>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col>
+                    <v-card outlined>
                         <v-card-title>Bravos_SM Source Data</v-card-title>
-                        <v-card-subtitle><b>Source Serial No:</b> {{ source.serial }}
-                                        <br>{{ source.isotope }} has a half-life of {{ source.half_life }} days.</v-card-subtitle>
+                        <v-card-subtitle class="d-flex justify-space-between">
+                            <div><b>Source Serial No:</b> {{ source.serial }}</div>
+                            <div><b>{{ source.isotope }} half-life:</b> {{ source.half_life }} days</div>    
+                        </v-card-subtitle>
                         <v-card-text>
                             <v-simple-table dense>
-                                <template v-slot:default>
-                                    <tbody>
-                                        <tr>
-                                            <td><b>Calibration Date:</b></td>
-                                            <td>{{ calibration | format_datestring }}</td>
-                                            <td>10:00 PT</td>
-                                        </tr>
-                                        <tr>
-                                            <td><b>Listed 10 Ci Date:</b></td>
-                                            <td>{{ ten_ci | format_datestring }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td><b>Calibration Strength</b></td>
-                                            <td>{{ source.curie }} Ci
-                                            <br>{{ source.gbq }} GBq
-                                            <br>{{ source.air_kerma_m }} mGy m<sup>2</sup> / h
-                                            <br>{{ source.air_kerma_cm }} cGy cm<sup>2</sup> / h</td>
-                                        </tr>
-
-                                    </tbody>
-                                </template>
+                                <tbody>
+                                    <tr>
+                                        <td><b>Calibration Date:</b></td>
+                                        <td>{{ calibration | format_datestring() }}</td>
+                                        <td>10:00 PT</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Listed 10 Ci Date:</b></td>
+                                        <td>{{ ten_ci | format_datestring() }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td><b>Calibration Strength</b></td>
+                                        <td>{{ source.curie }} Ci
+                                        <br>{{ source.gbq }} GBq
+                                        <br>{{ source.air_kerma_m }} mGy m<sup>2</sup> / h
+                                        <br>{{ source.air_kerma_cm }} cGy cm<sup>2</sup> / h</td>
+                                    </tr>
+                                </tbody>
                             </v-simple-table>
                         </v-card-text>
                     </v-card>
-                </v-row>
-                <v-row align="center" justify="center">
-                    <v-card width="95%" height="300" outlined>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col>
+                    <v-card outlined>
                         <v-card-title>Source Decay Calculation</v-card-title>
                         <v-card-subtitle><b>Decay Date: </b>{{ current.date }}, {{ current.time }} PT</v-card-subtitle>
                         <v-card-text>
-                            <v-simple-table>
-                                <template v-slot:default>
-                                    <tbody>
-                                        <tr>
-                                            <th style="width:25%;" class="text-center"><h3>Elapsed Days</h3>From Calibration</th>
-                                            <th style="width:25%;" class="text-center"><h3>Decay Factor</h3>% Remaining</th>
-                                            <th style="width:25%;" class="text-center"><h3>Decayed Source Activity</h3>Ci</th>
-                                            <th style="width:25%;" class="text-center"><h3>Decayed Air Kerma Strength</h3>cGy cm<sup>2</sup> / h</th>
-                                        </tr>
-                                        <tr>
-                                            <td class="text-center">
-                                                <v-progress-circular
-                                                    rotate="-90"
-                                                    size="125"
-                                                    width="20"
-                                                    :value="elapsed_progress"
-                                                    color="teal"
-                                                    >
-                                                    <h2>{{ elapsed_days | onlysigfigs(3) }}</h2>
-                                                </v-progress-circular>
-                                            </td>
-                                            <td class="text-center">
-                                                <v-progress-circular
-                                                    rotate="-90"
-                                                    size="125"
-                                                    width="20"
-                                                    :value="decay_progress"
-                                                    color="purple darken-3"
-                                                    >
-                                                    <h2>{{ decay_progress | onlysigfigs(1) }}%</h2>
-                                                </v-progress-circular>
-                                            </td>
-                                            <td class="text-center">
-                                                <v-progress-circular
-                                                    rotate="-90"
-                                                    size="125"
-                                                    width="20"
-                                                    :value="decay_progress"
-                                                    color="cyan darken-2"
-                                                    >
-                                                    <h2>{{ decay_activity | onlysigfigs(3) }}</h2>
-                                                </v-progress-circular>
-                                            </td>
-                                            <td class="text-center">
-                                                <v-progress-circular
-                                                    rotate="-90"
-                                                    size="125"
-                                                    width="20"
-                                                    :value="decay_progress"
-                                                    color="indigo darken-2"
-                                                    >
-                                                    <h2>{{ decay_aks | onlysigfigs(1) }}</h2>
-                                                </v-progress-circular>
-                                            </td>
-                                        </tr>
-
-                                    </tbody>
-                                </template>
-                            </v-simple-table>
+                            <v-row>
+                                <v-col class="pa-2">
+                                    <v-card style="text-align:center;">
+                                        <h3>Elapsed Days</h3>
+                                        <p>From Calibration</p>
+                                        <v-card-text>
+                                            <v-progress-circular
+                                                rotate="-90"
+                                                size="125"
+                                                width="20"
+                                                :value="elapsed_progress"
+                                                color="teal"
+                                                >
+                                                <h2>{{ elapsed_days | onlysigfigs(3) }}</h2>
+                                            </v-progress-circular>
+                                        </v-card-text>
+                                    </v-card>
+                                </v-col>
+                                <v-col class="pa-2">
+                                    <v-card style="text-align:center;">
+                                        <h3>Decay Factor</h3>
+                                        <p>% Remaining</p>
+                                        <v-card-text>
+                                            <v-progress-circular
+                                                rotate="-90"
+                                                size="125"
+                                                width="20"
+                                                :value="decay_progress"
+                                                color="purple darken-3"
+                                                >
+                                                <h2>{{ decay_progress | onlysigfigs(1) }}%</h2>
+                                            </v-progress-circular>
+                                        </v-card-text>
+                                    </v-card>
+                                </v-col>
+                                <v-col class="pa-2">
+                                    <v-card style="text-align:center;">
+                                        <h3>Source Activity</h3>
+                                        <p>Ci</p>
+                                        <v-card-text>
+                                            <v-progress-circular
+                                                rotate="-90"
+                                                size="125"
+                                                width="20"
+                                                :value="decay_progress"
+                                                color="cyan darken-2"
+                                                >
+                                                <h2>{{ decay_activity | onlysigfigs(3) }}</h2>
+                                            </v-progress-circular>
+                                        </v-card-text>
+                                    </v-card>
+                                </v-col>
+                                <v-col class="pa-2">
+                                    <v-card style="text-align:center;">
+                                        <h3>Air Kerma Strength</h3>
+                                        <p>cGy cm<sup>2</sup> / h</p>
+                                        <v-card-text>
+                                            <v-progress-circular
+                                                rotate="-90"
+                                                size="125"
+                                                width="20"
+                                                :value="decay_progress"
+                                                color="indigo darken-2"
+                                                >
+                                                <h2>{{ decay_aks | onlysigfigs(1) }}</h2>
+                                            </v-progress-circular>
+                                        </v-card-text>
+                                    </v-card>
+                                </v-col>
+                            </v-row>
                         </v-card-text>
                     </v-card>
-                </v-row>
-                <v-row align="center" justify="center" class="no-print">
-                    <v-card width="95%" height="200" outlined>
+                </v-col>
+            </v-row>
+            <v-row style="page-break-after: always;">
+                <v-col>
+                    <v-card outlined>
                         <v-card-title>Independent Decay Check:</v-card-title>
                         <v-card-subtitle>Check the Decayed Source Activity on the Treat Computer</v-card-subtitle>
                         <v-card-text>
                             <v-row>
-                                <v-col>
+                                <v-col class="pa-2">
                                     <v-text-field 
                                         label="Treat Computer Activity (Ci)"
                                         placeholder="Enter the Decayed Source Activity on the Treat Computer in Curie"
@@ -158,7 +173,7 @@
                                         v-model="tx_curie">
                                     </v-text-field>
                                 </v-col>
-                                <v-col>
+                                <v-col class="pa-2">
                                     <v-card :color="check_color[decay_check]" dark>
                                         <v-card-title>Difference in Activity (%):</v-card-title>
                                         <v-card-text><h3>{{ decay_diff | onlysigfigs(2) }}</h3></v-card-text>
@@ -167,9 +182,11 @@
                             </v-row>
                         </v-card-text>
                     </v-card>
-                </v-row>
-                <v-row align="center" justify="center" class="no-print">
-                    <v-card width="95%" height="600" outlined>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col>
+                    <v-card outlined>
                         <v-card-title>Pre-Treatment Decay & Time Scaling Checks:</v-card-title>
                         <v-card-subtitle>All treatment plans are generated using a 10 Ci source.
                             <br>Enter the values below from the Pre-Treatment Report
@@ -186,7 +203,7 @@
                                 </v-col>
                             </v-row>
                             <v-row>
-                                <v-col>
+                                <v-col class="pa-2">
                                     <v-text-field 
                                         label="Bravos Scaled Activity (Ci)"
                                         placeholder="Enter the Scaled Activity in Curie"
@@ -194,13 +211,13 @@
                                         v-model="bravos_scaled_ci">
                                     </v-text-field>
                                 </v-col>
-                                <v-col>
+                                <v-col class="pa-2">
                                     <v-card color="cyan darken-2" dark>
                                         <v-card-title>Calc'd Activity (Ci):</v-card-title>
                                         <v-card-text><h3>{{ decay_activity | onlysigfigs(3) }}</h3></v-card-text>
                                     </v-card>
                                 </v-col>
-                                <v-col>
+                                <v-col class="pa-2">
                                     <v-card :color="check_color[bravos_decay_check]" dark>
                                         <v-card-title>Difference (%):</v-card-title>
                                         <v-card-text><h3>{{ bravos_decay_diff | onlysigfigs(2) }}</h3></v-card-text>
@@ -208,7 +225,7 @@
                                 </v-col>
                             </v-row>
                             <v-row>
-                                <v-col>
+                                <v-col class="pa-2">
                                     <v-text-field 
                                         label="Bravos Scaled Treatment Time (s)"
                                         placeholder="Enter the Scaled Treatment Time in Seconds"
@@ -216,13 +233,13 @@
                                         v-model="bravos_scaled_tx_time">
                                     </v-text-field>
                                 </v-col>
-                                <v-col>
+                                <v-col class="pa-2">
                                     <v-card color="cyan darken-2" dark>
                                         <v-card-title>Calc'd Tx Time (s):</v-card-title>
                                         <v-card-text><h3>{{ scaled_tx_time | onlysigfigs(2) }}</h3></v-card-text>
                                     </v-card>
                                 </v-col>
-                                <v-col>
+                                <v-col class="pa-2">
                                     <v-card :color="check_color[scale_check]" dark>
                                         <v-card-title>Difference (%):</v-card-title>
                                         <v-card-text><h3>{{ scaled_diff | onlysigfigs(2) }}</h3></v-card-text>
@@ -230,7 +247,7 @@
                                 </v-col>
                             </v-row>
                             <v-row>
-                                <v-col>
+                                <v-col class="pa-2">
                                     <v-text-field 
                                         label="Bravos Scaled Curie-Seconds (Ci-s)"
                                         placeholder="Enter the Scaled Total Curie-Seconds"
@@ -238,46 +255,28 @@
                                         v-model="bravos_scaled_cis">
                                     </v-text-field>
                                 </v-col>
-                                <v-col>
+                                <v-col class="pa-2">
                                     <v-card color="cyan darken-2" dark>
                                         <v-card-title>Calc'd Ci-s:</v-card-title>
                                         <v-card-text><h3>{{ scaled_cis | onlysigfigs(2) }}</h3></v-card-text>
                                     </v-card>
                                 </v-col>
-                                <v-col>
+                                <v-col class="pa-2">
                                     <v-card :color="check_color[cis_check]" dark>
                                         <v-card-title>Difference (%):</v-card-title>
                                         <v-card-text><h3>{{ cis_diff | onlysigfigs(2) }}</h3></v-card-text>
                                     </v-card>
                                 </v-col>
                             </v-row>
-                            <!-- v-row>
-                                <v-col>
-                                    <v-text-field 
-                                        label="Bravos Scaled Treatment Time (s)"
-                                        placeholder="Enter the Scaled Treatment Time in Seconds"
-                                        hint="Enter the Scaled Treatment Time in Seconds"
-                                        v-model="tx_scale">
-                                    </v-text-field>
-                                </v-col>
-                                <v-col>
-                                    <v-card color="indigo darken-2" dark>
-                                        <v-card-title>Total Curie Seconds (Ci-s):</v-card-title>
-                                        <v-card-text><h3>{{ scaled_cis | onlysigfigs(2) }}</h3></v-card-text>
-                                    </v-card>
-                                </v-col>
-                            </v-row -->
                         </v-card-text>
                     </v-card>
-                </v-row>
-            </div>
+                </v-col>
+            </v-row>
         </v-container>
   </div>
 </template>
 
 <script>
-import jsource from '../assets/source.json'
-
 export default {
     name: 'DecayTable',
     data() {
@@ -292,7 +291,7 @@ export default {
                 date: new Date().toISOString().substr(0,10),
                 time: '12:00',
             },
-            source: jsource,
+            source: {},
             check_color: {
                 'None': '#2774AE',
                 'Pass': 'light-green darken-3',
@@ -300,10 +299,25 @@ export default {
             }
         }
       },
+    mounted() {
+        fetch("/api/bravos_sources/active")
+            .then(response => response.json())
+            .then(result => {
+                console.log(result);
+                this.source = result.source[0];
+                console.log(this.source);
+            })
+    },
     methods: {
         allowedStep: m => m % 5 === 0,
       },
     computed: {
+        calibration () {
+            return new Date(this.source.calibration);
+        },
+        ten_ci () {
+            return new Date(this.source.ten_ci_date);
+        },
         now_date () {
             var _date = new Date(this.current.date);
             var _year = _date.getFullYear();
@@ -314,12 +328,6 @@ export default {
             var _now = new Date(_year,_month,_day,_hour,_min,0,0);
             //console.log("Now =" + _now);
             return _now;
-        },
-        calibration () {
-            return new Date(this.source.calibration.year,this.source.calibration.month,this.source.calibration.day,this.source.calibration.hour);
-        },
-        ten_ci () {
-            return new Date(this.source.ten_ci_date.year,this.source.ten_ci_date.month,this.source.ten_ci_date.day);
         },
         elapsed_days () {
             var now_time = this.now_date.getTime();
