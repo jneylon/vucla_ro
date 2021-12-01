@@ -331,7 +331,7 @@ export default {
         }
       },
     mounted() {
-        fetch("/api/bravos_sources/active")
+        fetch("http://localhost:3000/bravos_sources/active")
             .then(response => response.json())
             .then(result => {
                 console.log(result);
