@@ -615,7 +615,7 @@
         post_new_source () {
             console.log(this.new_source);
 
-            fetch("http://localhost:3000/bravos_sources/new", {
+            fetch("http://localhost:3000/api/bravos_sources/new", {
                 method: "POST",
                 body: JSON.stringify(this.new_source),
                 headers: {
@@ -640,7 +640,7 @@
                     "_id": id
                 }
 
-                fetch("http://localhost:3000/bravos_sources/delete", {
+                fetch("http://localhost:3000/api/bravos_sources/delete", {
                     method: "DELETE",
                     body: JSON.stringify(_message),
                     headers: {
@@ -666,7 +666,7 @@
                 "_id": id
             }
 
-            fetch("http://localhost:3000/bravos_sources/activate", {
+            fetch("http://localhost:3000/api/bravos_sources/activate", {
                 method: "PUT",
                 body: JSON.stringify(_message),
                 headers: {
@@ -709,7 +709,7 @@
             this.tenci_hours = _date.getHours();
         },
         refresh_sources () {
-            fetch("http://localhost:3000/bravos_sources")
+            fetch("http://localhost:3000/api/bravos_sources")
                 .then(response => response.json())
                 .then(result => {
                     console.log(result);
@@ -758,7 +758,7 @@
               }
         },
         check_db_for_template() {
-            var _request = "http://localhost:3000/pqr_templates/match/";
+            var _request = "http://localhost:3000/api/pqr_templates/match/";
             _request += this.cc_chosenFolder;
             _request += "/";
             _request += this.cc_chosenTemplate;
@@ -791,7 +791,7 @@
                     "constraints": this.cc_chosenConstraints
                 }
 
-                fetch("http://localhost:3000/pqr_templates/new", {
+                fetch("http://localhost:3000/api/pqr_templates/new", {
                     method: "POST",
                     body: JSON.stringify(new_template),
                     headers: {
@@ -812,7 +812,7 @@
             this.refresh_templates();
         },
         retrieve_folders () {
-            fetch("http://localhost:3000/pqr_templates/folders")
+            fetch("http://localhost:3000/api/pqr_templates/folders")
                 .then(response => response.json())
                 .then(result => {
                     console.log(result);
@@ -821,7 +821,7 @@
                 })
         },
         retrieve_templates () {
-            var _request = "http://localhost:3000/pqr_templates/templates/";
+            var _request = "http://localhost:3000/api/pqr_templates/templates/";
             _request += this.sel_folder;
             
             fetch(_request)
@@ -838,7 +838,7 @@
         },
         delete_template () {
             if (this.delete_template_forever) {
-                var _request = "http://localhost:3000/pqr_templates/delete/";
+                var _request = "http://localhost:3000/api/pqr_templates/delete/";
                 _request += this.sel_template._id;
                 console.log(_request);
 

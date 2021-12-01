@@ -443,7 +443,7 @@ export default {
             window.print();
         },
         retrieve_folders () {
-            fetch("http://localhost:3000/pqr_templates/folders")
+            fetch("http://localhost:3000/api/pqr_templates/folders")
                 .then(response => response.json())
                 .then(result => {
                     console.log(result);
@@ -460,7 +460,7 @@ export default {
             }
         },
         match_templates () {
-            var _request = "http://localhost:3000/pqr_templates/match/";
+            var _request = "http://localhost:3000/api/pqr_templates/match/";
             _request += this.cc_matchedFolder;
             _request += "/";
             _request += this.cc_chosenTemplate;
@@ -477,7 +477,7 @@ export default {
                 })
         },
         retrieve_templates () {
-            var _request = "http://localhost:3000/pqr_templates/templates/";
+            var _request = "http://localhost:3000/api/pqr_templates/templates/";
             _request += this.cc_matchedFolder;
             //console.log(_request);
             
@@ -526,7 +526,7 @@ export default {
               this.$set(this.keys,i,newkey);
         },
         check_db_for_patient() {
-            var _request = "http://localhost:3000/pqr_patients/match/";
+            var _request = "http://localhost:3000/api/pqr_patients/match/";
             _request += this.mrn;
             _request += "/";
             _request += this.jsondata.Course;
@@ -595,7 +595,7 @@ export default {
                 }
                 console.log(new_patient);
 
-                fetch("http://localhost:3000/pqr_patients/new", {
+                fetch("http://localhost:3000/api/pqr_patients/new", {
                     method: "POST",
                     body: JSON.stringify(new_patient),
                     headers: {

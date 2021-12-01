@@ -123,7 +123,7 @@ export default {
     },
     methods: {
         retrieve_folders () {
-            fetch("http://localhost:3000/pqr_templates/folders")
+            fetch("http://localhost:3000/api/pqr_templates/folders")
                 .then(response => response.json())
                 .then(result => {
                     console.log(result);
@@ -132,7 +132,7 @@ export default {
                 })
         },
         retrieve_templates () {
-            var _request = "http://localhost:3000/pqr_templates/templates/";
+            var _request = "http://localhost:3000/api/pqr_templates/templates/";
             _request += this.sel_folder;
             
             fetch(_request)
