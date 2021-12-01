@@ -1,0 +1,17 @@
+{
+    "name": "vuclaro_app",
+    "version": "1.0.0",
+    "description": "vUCLARO App",
+    "main": "vuclaro.js",
+    "type": "module",
+    "scripts": {
+      "prod": "node vuclaro.js"
+    },
+    "author": "Jack Neylon, PhD, DABR",
+    "license": "ISC",
+    "dependencies": {
+      "dotenv": "^10.0.0",
+      "express": "^4.17.1"
+    }
+  }
+  
