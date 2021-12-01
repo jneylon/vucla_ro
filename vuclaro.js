@@ -9,6 +9,6 @@ app.use(express.static('frontend/dist'))
 import dotenv from 'dotenv'
 dotenv.config()
 const port = process.env.PORT || 3000;
-const host = process.env.EXP_IP || 'localhost';
+const host = process.env.EXP_IP || '0.0.0.0';
 // start the server
 app.listen(port, host, () => console.log(`Listening on http://${host}:${port}`))
