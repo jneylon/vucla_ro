@@ -1,41 +1,66 @@
 <template>
     <div id="tg43">
         <v-navigation-drawer 
-            app 
-            floating 
+            app  
             clipped
             permanent 
+            stateless
+            :mini-variant="!show_settings"
+            mini-variant-width="80"
             dark 
-            width="320" 
+            width="360" 
             class="no-print">
             <v-list-item>
                 <v-list-item-content>
-                  <v-list-item-title class="title">
-                    Tx Date & Time:
-                  </v-list-item-title>
+                    <v-icon @click="show_settings=!show_settings">mdi-unfold-more-vertical</v-icon>
                 </v-list-item-content>
             </v-list-item>
             <v-divider></v-divider>
-            <v-card justify="center" outlined>
-                <v-card-text>
-                    <v-date-picker
-                        v-model="current.date"
-                        full-width
-                    ></v-date-picker>
-                </v-card-text>
-            </v-card>
+            <v-list>
+                <v-list-item @click="loading=true,importJSON()">
+                    <v-list-item-icon><v-icon>mdi-file-import</v-icon></v-list-item-icon>
+                    <v-list-item-title>Import TG43 JSON File</v-list-item-title>
+                </v-list-item>
+                <v-list-item 
+                    :disabled="!analyzed" 
+                    @click="print2pdf()">
+                    <v-list-item-icon><v-icon :disabled="!analyzed">mdi-printer</v-icon></v-list-item-icon>
+                    <v-list-item-title>Print to PDF</v-list-item-title>
+                </v-list-item>
+            </v-list>
             <v-divider></v-divider>
-            <v-card justify="center" outlined>
-                <v-card-text>
-                    <v-time-picker
-                        v-model="current.time"
-                        :allowed-minutes="allowedStep"
-                        format="24hr"
-                        scrollable
-                        full-width
-                    ></v-time-picker>
-                </v-card-text>
-            </v-card>
+            <v-list>
+                <v-list-group :value="show_settings" @click="show_settings=true">
+                    <template v-slot:activator>
+                        <v-list-item-icon><v-icon>mdi-timetable</v-icon></v-list-item-icon>
+                        <v-list-item-title>Treatment Date & Time:</v-list-item-title>
+                    </template>
+                    <v-list-item>
+                        <v-card outlined>
+                            <v-card-text>
+                                <v-date-picker 
+                                    show-adjacent-months
+                                    v-model="current.date"
+                                    width="275"
+                                ></v-date-picker>
+                            </v-card-text>
+                        </v-card>
+                    </v-list-item>
+                    <v-list-item>
+                        <v-card outlined>
+                            <v-card-text>
+                                <v-time-picker
+                                    v-model="current.time"
+                                    :allowed-minutes="allowedStep"
+                                    format="24hr"
+                                    width="275"
+                                    scrollable
+                                ></v-time-picker>
+                            </v-card-text>
+                        </v-card>
+                    </v-list-item>
+                </v-list-group>
+            </v-list>
         </v-navigation-drawer>
         <v-container justify="center" align="center">
             <v-row class="d-print-none">
@@ -50,13 +75,6 @@
                                 v-model="chosenFile">
                             </v-file-input>
                         </v-card-text>
-                        <v-card-actions>
-                            <v-btn 
-                                rounded 
-                                color="#2774AE"
-                                dark 
-                                @click="loading=true,importJSON()">Import TG43 JSON File</v-btn>
-                        </v-card-actions>
                         <template slot="progress">
                             <v-progress-linear
                                 color="#2774AE"
@@ -122,7 +140,17 @@
             <v-row>
                 <v-col>
                     <v-card outlined>
-                        <v-card-title><h4>Bravos_SM Source Data</h4></v-card-title>
+                        <v-card-title class="d-flex justify-space-between">
+                            <h4>Bravos_SM Source Data</h4>
+                            <v-btn 
+                                fab 
+                                text 
+                                small 
+                                class="no-print" 
+                                @click="show_settings=true">
+                                <v-icon >mdi-update</v-icon>
+                            </v-btn>
+                        </v-card-title>
                         <v-card-subtitle class="d-flex justify-space-between">
                             <div><b>Source Serial No: </b>{{ source.serial }}</div>
                             <div><b>Dose Rate Constant: </b>{{ lambda }} cGy / h / U</div>
@@ -258,6 +286,7 @@ export default {
                 'mdi-eye-off': "text--disabled text-decoration-line-through font-italic no-print",
             },
             source: {},
+            show_settings: false,
         }
     },
     mounted() {
@@ -340,7 +369,8 @@ export default {
 
                         dose_sum += d_partial;
 
-                        this.tx_time += this.dwells[d].time;
+                        if (r == 0)
+                            this.tx_time += this.dwells[d].time;
                     }
                     var dose_diff = 100.0 * (dose_sum - this.ref_points[r].dose_abs) / this.ref_points[r].dose_abs;
                     let pass = "Fail";
@@ -366,6 +396,9 @@ export default {
             }
             this.loading = false;
             this.analyzed = true;
+        },
+        print2pdf() {
+            window.print();
         }
       },
       computed: {
@@ -450,10 +483,18 @@ export default {
               return value;
           },
           format_isostring: function (value) {
-              return value.substr(0, 10);
+            if (value == 'Invalid Date') {
+                return '';
+            } else {
+                return value.substr(0, 10);
+            }
           },
           format_datestring: function (value) {
-              return value.toISOString().substr(0, 10);
+            if (value == 'Invalid Date') {
+                return '';
+            } else {
+                return value.toISOString().substr(0, 10);
+            }
           },
           checkTolerance: function(value, tolerance) {
                 if (!value) return 'n/a'

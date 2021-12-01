@@ -2,41 +2,59 @@
     <div id="decay_table">
         <v-navigation-drawer
             app
-            floating
             clipped 
-            permanent 
-            dark 
-            width="320" 
+            permanent
+            stateless
+            :mini-variant="!show_settings"
+            mini-variant-width="80"
+            dark
+            width="360" 
             class="no-print">
             <v-list-item>
                 <v-list-item-content>
-                  <v-list-item-title class="title">
-                    Decay Date & Time:
-                  </v-list-item-title>
+                    <v-icon @click="show_settings=!show_settings">mdi-unfold-more-vertical</v-icon>
                 </v-list-item-content>
             </v-list-item>
             <v-divider></v-divider>
-            <v-card justify="center" outlined>
-                <v-card-text>
-                    <v-date-picker
-                        v-model="current.date"
-                        full-width
-                        scrollable
-                    ></v-date-picker>
-                </v-card-text>
-            </v-card>
+            <v-list>
+                <v-list-group :value="show_settings" @click="show_settings=true">
+                    <template v-slot:activator>
+                        <v-list-item-icon><v-icon>mdi-timetable</v-icon></v-list-item-icon>
+                        <v-list-item-title>Decay Date & Time:</v-list-item-title>
+                    </template>
+                    <v-list-item>
+                        <v-card outlined>
+                            <v-card-text>
+                                <v-date-picker 
+                                    show-adjacent-months
+                                    v-model="current.date"
+                                    width="275"
+                                ></v-date-picker>
+                            </v-card-text>
+                        </v-card>
+                    </v-list-item>
+                    <v-list-item>
+                        <v-card outlined>
+                            <v-card-text>
+                                <v-time-picker
+                                    v-model="current.time"
+                                    :allowed-minutes="allowedStep"
+                                    format="24hr"
+                                    width="275"
+                                    scrollable
+                                ></v-time-picker>
+                            </v-card-text>
+                        </v-card>
+                    </v-list-item>
+                </v-list-group>
+            </v-list>
             <v-divider></v-divider>
-            <v-card justify="center" outlined>
-                <v-card-text>
-                    <v-time-picker
-                        v-model="current.time"
-                        :allowed-minutes="allowedStep"
-                        format="24hr"
-                        scrollable
-                        full-width
-                    ></v-time-picker>
-                </v-card-text>
-            </v-card>
+            <v-list>
+                <v-list-item @click="print2pdf()">
+                    <v-list-item-icon><v-icon>mdi-printer</v-icon></v-list-item-icon>
+                    <v-list-item-title>Print to PDF</v-list-item-title>
+                </v-list-item>
+            </v-list>
         </v-navigation-drawer>
         <v-container>
             <v-row>
@@ -81,8 +99,20 @@
             <v-row>
                 <v-col>
                     <v-card outlined>
-                        <v-card-title>Source Decay Calculation</v-card-title>
-                        <v-card-subtitle><b>Decay Date: </b>{{ current.date }}, {{ current.time }} PT</v-card-subtitle>
+                        <v-card-title class="d-flex justify-space-between">
+                            <h4>Source Decay Calculation</h4>
+                            <v-btn 
+                                fab 
+                                text 
+                                small 
+                                class="no-print" 
+                                @click="show_settings=true">
+                                <v-icon>mdi-update</v-icon>
+                            </v-btn>
+                        </v-card-title>
+                        <v-card-subtitle>
+                            <div><b>Decay Date: </b>{{ current.date }}, {{ current.time }} PT</div>
+                        </v-card-subtitle>
                         <v-card-text>
                             <v-row>
                                 <v-col class="pa-2">
@@ -296,7 +326,8 @@ export default {
                 'None': '#2774AE',
                 'Pass': 'light-green darken-3',
                 'Fail': 'red darken-3'
-            }
+            },
+            show_settings: false,
         }
       },
     mounted() {
@@ -310,13 +341,24 @@ export default {
     },
     methods: {
         allowedStep: m => m % 5 === 0,
+        print2pdf() {
+            window.print();
+        }
       },
     computed: {
         calibration () {
-            return new Date(this.source.calibration);
+            if (!this.source) {
+                return '';
+            } else {
+                return new Date(this.source.calibration);
+            }
         },
         ten_ci () {
-            return new Date(this.source.ten_ci_date);
+            if (!this.source) {
+                return '';
+            } else {
+                return new Date(this.source.ten_ci_date);
+            }
         },
         now_date () {
             var _date = new Date(this.current.date);
@@ -419,7 +461,11 @@ export default {
               return value.substr(0, 10);
           },
           format_datestring: function (value) {
-              return value.toISOString().substr(0, 10);
+              if (value == 'Invalid Date') {
+                return '';
+              } else {
+                return value.toISOString().substr(0, 10);
+              }
           }
       },
 }

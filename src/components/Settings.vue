@@ -90,24 +90,24 @@
                   </v-card-text>
                   <v-card-actions>
                     <v-btn 
-                        @click.stop="dialog = true"
+                        @click.stop="brachy_dialog = true"
                         color="#2774AE" 
                         text>
                         Add New Source
                     </v-btn>
                     <v-btn 
-                        @click.stop="refresh()"
+                        @click.stop="refresh_sources()"
                         color="#2774AE" 
                         text>
                         Refresh List
                     </v-btn>
                   </v-card-actions>
                   <v-overlay
-                    :value="overlay"
+                    :value="error_overlay"
                     absolute>
                     <v-btn
                         color="error"
-                        @click="overlay = false">{{this.error}}
+                        @click="error_overlay = false">{{this.error}}
                     </v-btn>
                   </v-overlay>
               </v-card>
@@ -115,7 +115,7 @@
       </v-row>
       <v-row justify="center">
         <v-dialog
-            v-model="dialog"
+            v-model="brachy_dialog"
             persistent
             max-width="600px"
             >           
@@ -266,7 +266,7 @@
                     <v-btn
                         color="#2774AE" 
                         text
-                        @click="dialog = false"
+                        @click="brachy_dialog = false"
                         >
                         Cancel
                     </v-btn>
@@ -274,7 +274,7 @@
                         color="#2774AE" 
                         text
                         :disabled="!parsed"
-                        @click="dialog=false; set_new_source(); post_new_source()"
+                        @click="brachy_dialog=false; set_new_source(); post_new_source()"
                         >
                         Save
                     </v-btn>
@@ -313,18 +313,176 @@
             </v-card>
           </v-dialog>
       </v-row>
-    <v-footer app
-        color="#2774AE"
-        padless
-        class="no-print">
-        <v-col
-            class="text-center white--text"
-            cols="12"
+      <v-row>
+          <v-col>
+            <v-card>
+                <v-card-title>Plan Quality Database</v-card-title>
+                <v-card-subtitle>DVH Constraint Templates</v-card-subtitle>
+                <v-card-text>
+                    <v-container>
+                        <v-row>
+                            <v-col cols="6">
+                                <v-combobox
+                                    label="Constraint Folder"
+                                    hint="Select a treatment area"
+                                    v-model="sel_folder"
+                                    :items="cc_folders"
+                                    @change="retrieve_templates()">
+                                </v-combobox>
+                            </v-col>
+                            <v-col cols="6">
+                                <v-combobox
+                                    label="Constraint Template"
+                                    hint="Select a template to view constraints"
+                                    v-model="sel_template"
+                                    :items="cc_templates"
+                                    item-text="template"
+                                    return-object>
+                                </v-combobox>
+                            </v-col>
+                            <v-col cols="12">
+                                <v-simple-table dense v-if="sel_template">
+                                    <template v-slot:default>
+                                        <tbody>
+                                            <tr>
+                                                <th>Structure</th>
+                                                <th>Constraint</th>
+                                                <th>Goal</th>
+                                            </tr>
+                                            <tr v-for="item in sel_template.constraints" :key='item.Priority'>
+                                                <td>{{ item.StructureTemplate }}</td>
+                                                <td>{{ item.ConstraintToPresent }}</td>
+                                                <td>{{ item.GoalLimitToPresent }}</td>
+                                            </tr>
+                                        </tbody>
+                                    </template>
+                                </v-simple-table>
+                            </v-col>
+                        </v-row>
+                    </v-container>
+                </v-card-text>
+                <v-card-actions>
+                    <v-btn 
+                        @click.stop="cc_dialog = true"
+                        color="#2774AE" 
+                        text>
+                        Add New Template
+                    </v-btn>
+                    <v-btn 
+                        @click.stop="refresh_templates()"
+                        color="#2774AE" 
+                        text>
+                        Refresh List
+                    </v-btn>
+                    <v-btn v-if="sel_template"
+                        @click.stop="delete_template_confirmation = true"
+                        color="red" 
+                        text>
+                        Delete Selected Template
+                    </v-btn>
+                    <v-btn
+                        @click.stop="clear_templates()"
+                        color="#2774AE"
+                        text>
+                        Clear
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+          </v-col>
+      </v-row>
+      <v-row justify="center">
+          <v-dialog
+            v-model="delete_template_confirmation"
+            persistent
+            max-width="400px"
             >
-            <h3>Comments, Questions, or Requests?</h3>
-            <br>Address to <strong>Jack Neylon, PhD, DABR  |  jneylon@mednet.ucla.edu</strong>
-        </v-col>
-    </v-footer>
+            <v-card>
+                <v-card-title class="text-h5">
+                    Permanently Delete Template?
+                </v-card-title>
+                <v-card-text>Proceeding will remove this template from the database permanently.</v-card-text>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn
+                        color="#2774AE" 
+                        text
+                        @click="delete_template_confirmation=false"
+                        >
+                        Cancel
+                    </v-btn>
+                    <v-btn
+                        color="#2774AE" 
+                        text
+                        @click="delete_template_forever=true; delete_template(); delete_template_confirmation=false"
+                        >
+                        Delete Forever
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+          </v-dialog>
+      </v-row>
+      <v-row justify="center">
+        <v-dialog
+            v-model="cc_dialog"
+            persistent
+            max-width="600px"
+            > 
+            <v-card>
+                <v-card-title>Import New Constraint Template</v-card-title>
+                <v-card-text>
+                    <v-file-input 
+                        accept=".json"
+                        label="Select a JSON file"
+                        outlined
+                        v-model="cc_chosenFile">
+                    </v-file-input>
+                    <h3 v-show="cc_imported">{{ cc_chosenFolder }} : {{ cc_chosenTemplate }}</h3>
+                    <v-simple-table v-show="cc_imported">
+                        <template v-slot:default>
+                            <tbody>
+                                <tr>
+                                    <th class="text-center">Structure</th>
+                                    <th class="text-center">Constraint</th>
+                                    <th class="text-center">Goal</th>
+                                </tr>
+                                <tr v-for="item in cc_chosenConstraints" :key="item.Priority" class="text-center">
+                                    <td>{{ item.StructureTemplate }}</td>
+                                    <td>{{ item.ConstraintToPresent }}</td>
+                                    <td>{{ item.GoalLimitToPresent }}</td>
+                                </tr>
+                            </tbody>
+                        </template>
+                    </v-simple-table>
+                    <br>
+                    <p v-show="cc_exists" style="color:red">Template already exists in database.</p>
+                </v-card-text>
+                <v-card-actions>
+                    <v-btn 
+                        color="#2774AE"
+                        text 
+                        @click="import_cc_template()"
+                        >
+                        Import JSON file
+                    </v-btn>
+                    <v-btn
+                        color="#2774AE" 
+                        text
+                        @click="cc_dialog=false"
+                        >
+                        Cancel
+                    </v-btn>
+                    <v-btn
+                        color="#2774AE" 
+                        text
+                        :disabled="cc_exists"
+                        @click="cc_dialog=false;cc_imported=false;post_new_cc_template()"
+                        >
+                        Save
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+      </v-row>
 </v-container>
 </template>
 
@@ -338,19 +496,19 @@
             error: "error",
             messages: [],
             sources: [],
-            dialog: false,
+            brachy_dialog: false,
             new_source: {
-                    "isotope": "",
-                    "half_life": "",
-                    "serial": "",
-                    "calibration": "",
-                    "ten_ci_date": "",
-                    "curie": "",
-                    "gbq": "",
-                    "air_kerma_m": "",
-                    "air_kerma_cm": "",
-                    "_id": "",
-                    "active": false
+                "isotope": "",
+                "half_life": "",
+                "serial": "",
+                "calibration": "",
+                "ten_ci_date": "",
+                "curie": "",
+                "gbq": "",
+                "air_kerma_m": "",
+                "air_kerma_cm": "",
+                "_id": "",
+                "active": false
             },
             isotope: "Ir-192",
             half_life: 73.83,
@@ -366,17 +524,34 @@
                 check: value => this.checksum(value) || 'Checksum failed! (ex: 27-01-0001-001-010121-15000-22)',
             },
             set_active: false,
-            overlay: false,
+            error_overlay: false,
             delete_confirmation: false,
             delete_forever: false,
             delete_id: "",
             authorize: false,
             authuser: "",
-            authpwd: ""
+            authpwd: "",
+            templates: [],
+            cc_folders: [],
+            cc_templates: [],
+            cc_dialog: false,
+            cc_imported: false,
+            sel_folder: null,
+            sel_template: null,
+            cc_constraints: [],
+            cc_contents: null,
+            cc_chosenFile: null,
+            cc_chosenFolder: null,
+            cc_chosenTemplate: null,
+            cc_chosenConstraints: null,
+            cc_exists: false,
+            delete_template_confirmation: false,
+            delete_template_forever: false,
         }
     },
     mounted() {
-        this.refresh()
+        this.refresh_sources();
+        this.retrieve_folders();
     },
     computed: {
         gbq () {
@@ -399,7 +574,7 @@
             } else {
                 return false;
             }
-        }
+        },
     },
     methods: {
         checkAuthorization() {
@@ -451,11 +626,11 @@
             .then(result => {
                 if (result.error) {
                     this.error = result.error;
-                    this.overlay = true;
+                    this.error_overlay = true;
                 } else {
                     this.error = "";
                 }
-                this.refresh();
+                this.refresh_sources();
             });
         },
         delete_source (id) {
@@ -476,13 +651,13 @@
                 .then(result => {
                     if (result.error) {
                         this.error = result.error;
-                        this.overlay = true;
+                        this.error_overlay = true;
                     } else {
                         this.error = "";
                     }
                 });
                 this.delete_forever = false;
-                this.refresh();
+                this.refresh_sources();
             }
         },
         set_source_as_active (id) {
@@ -502,12 +677,12 @@
             .then(result => {
                 if (result.error) {
                     this.error = result.error;
-                    this.overlay = true;
+                    this.error_overlay = true;
                 } else {
                     this.error = "";
                 }
 
-                this.refresh();
+                this.refresh_sources();
             });
         },
         parse_serial () {
@@ -533,7 +708,7 @@
             this.tencurie = _date.toISOString().substr(0,10);
             this.tenci_hours = _date.getHours();
         },
-        refresh () {
+        refresh_sources () {
             fetch("/api/bravos_sources")
                 .then(response => response.json())
                 .then(result => {
@@ -555,6 +730,135 @@
             } else {
                 return 'grey'
             }
+        },
+        import_cc_template() {
+              if (!this.cc_chosenFile) {
+                  return;
+              }
+              //console.log(this.cc_chosenFile.name);
+              var reader = new FileReader();
+              reader.readAsText(this.cc_chosenFile);
+              reader.onload = () => 
+              {
+                var jsondata = JSON.parse(reader.result);
+                var templateName = jsondata.TemplateName.split('(');
+                this.cc_chosenFolder = templateName[1].slice(0, -1);
+                //console.log(this.cc_chosenFolder);
+                this.cc_chosenTemplate = templateName[0].slice(0, -1);
+                //console.log(this.cc_chosenTemplate);
+                this.check_db_for_template();
+                
+                if (!jsondata.CalculatedConstraints) {
+                    this.cc_chosenConstraints = jsondata.PlanData[0].CalculatedConstraints;
+                } else {
+                    this.cc_chosenConstraints = jsondata.CalculatedConstraints;
+                }
+                //console.log(this.cc_chosenConstraints);
+                this.cc_imported = true;
+              }
+        },
+        check_db_for_template() {
+            var _request = "/api/pqr_templates/match/";
+            _request += this.cc_chosenFolder;
+            _request += "/";
+            _request += this.cc_chosenTemplate;
+            console.log(_request);
+
+            fetch(_request)
+                .then(response => response.json())
+                .then(result => {
+                    //console.log(result);
+                    if (result.template.length > 0) { 
+                        console.log("Template found."); 
+                        console.log(result.template);
+                        this.cc_exists = true;                      
+                        return true;
+                    } else {
+                        console.log("Template NOT found.");
+                        this.cc_exists = false;
+                        return false;
+                    }
+                })
+        },
+        post_new_cc_template() {
+            //this.cc_folders.indexOf(this.cc_chosenFolder) === -1 ? this.cc_folders.push(this.cc_chosenFolder) : console.log("Folder already in database.");
+            if (this.cc_exists) { 
+                console.log("Folder/template already in database.");
+            } else {
+                var new_template = {
+                    "folder": this.cc_chosenFolder,
+                    "template": this.cc_chosenTemplate,
+                    "constraints": this.cc_chosenConstraints
+                }
+
+                fetch("/api/pqr_templates/new", {
+                    method: "POST",
+                    body: JSON.stringify(new_template),
+                    headers: {
+                        "content-type": "application/json"
+                    }
+                })
+                .then(response => response.json())
+                .then(result => {
+                    if (result.error) {
+                        this.error = result.error;
+                        this.error_overlay = true;
+                    } else {
+                        this.error = "";
+                    }
+                });
+             }
+            
+            this.refresh_templates();
+        },
+        retrieve_folders () {
+            fetch("/api/pqr_templates/folders")
+                .then(response => response.json())
+                .then(result => {
+                    console.log(result);
+                    this.messages = result;
+                    this.cc_folders = result.folders;
+                })
+        },
+        retrieve_templates () {
+            var _request = "/api/pqr_templates/templates/";
+            _request += this.sel_folder;
+            
+            fetch(_request)
+                .then(response => response.json())
+                .then(result => {
+                    console.log(result);
+                    this.messages = result;
+                    this.cc_templates = result.templates;
+                })
+        },
+        refresh_templates () {
+            this.retrieve_folders();
+            this.retrieve_templates();
+        },
+        delete_template () {
+            if (this.delete_template_forever) {
+                var _request = "/api/pqr_templates/delete/";
+                _request += this.sel_template._id;
+                console.log(_request);
+
+                fetch(_request, { method: "DELETE" } )
+                .then(response => response.json())
+                .then(result => {
+                    if (result.error) {
+                        this.error = result.error;
+                        this.error_overlay = true;
+                    } else {
+                        this.error = "";
+                    }
+                });
+                this.delete_template_forever = false;
+                this.refresh_templates();
+            }
+        },
+        clear_templates() {
+            this.sel_template = null;
+            this.sel_folder = null;
         }
     },
     filters: {

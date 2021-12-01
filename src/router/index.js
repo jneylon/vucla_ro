@@ -5,7 +5,7 @@ Vue.use(VueRouter)
 
 const routes = [
   {
-    path: '/home',
+    path: '/',
     name: 'home',
     component: () => import('../components/HelloUCLARO'),
     props: true
@@ -21,6 +21,16 @@ const routes = [
     component: () => import('../components/TG43')
   },
   {
+    path: '/pqreporter',
+    name: 'pqreporter',
+    component: ()=> import('../components/PlanQualityReporter')
+  },
+  {
+    path: '/pqexplorer',
+    name: 'pqexplorer',
+    component: ()=> import('../components/PlanQualityExplorer')
+  },
+  {
     path: '/tlog',
     name: 'tlog',
     component: () => import('../components/TLog')
@@ -33,7 +43,7 @@ const routes = [
 ]
 
 const router = new VueRouter({
-  mode: 'history',
+  mode: 'hash',
   base: process.env.BASE_URL,
   routes
 })

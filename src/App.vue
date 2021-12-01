@@ -6,6 +6,7 @@
       dark
       clipped-left
       absolute
+      permanent
       flat
       >
       <div class="d-flex align-center">
@@ -19,7 +20,7 @@
         />
       </div>
 
-      <v-divider vertical class="mx-4; no-print"></v-divider>
+      <v-divider vertical class="mx-4"></v-divider>
       <v-btn text class="no-print"><v-icon>{{ wafer_icons[vindex] }}</v-icon></v-btn>
       <v-toolbar-title class="no-print">{{ wafer_title[vindex] }}</v-toolbar-title>
       <v-spacer></v-spacer>
@@ -68,20 +69,27 @@ export default {
     wafer_title: ['Home',
                   'Bravos_SM Decay Table',
                   'Bravos_SM TG43 Calc',
+                  'Plan Quality Reports',
+                  'PQDB Explorer',
                   'Trajectory Log Analysis',
                   'Settings'],
     wafer_icons: ['mdi-home',
-                  'mdi-timer-sand',
-                  'mdi-atom',
+                  'mdi-table-clock',
+                  'mdi-radioactive-circle',
+                  'mdi-file-chart-outline',
+                  'mdi-graphql',
                   'mdi-abacus',
                   'mdi-cog-outline'],
     wafer_paths: ['/home',
                   '/decay',
                   '/tg43',
+                  '/pqreporter',
+                  '/pqexplorer',
                   '/tlog',
                   '/settings'],
     navdrawer: false,
     vindex: 0,
+    lastindex: 0
   }),
   computed: {
       pages () {
@@ -102,6 +110,10 @@ export default {
       } else {
         this.$router.push({ path: this.wafer_paths[this.vindex]});
       }
+    },
+    backButtonPressed () {
+      console.log("BACKBUTTON! UGH!!");
+      this.$router.go();
     }
   },
   watch: {
@@ -110,7 +122,12 @@ export default {
     }
   },
   mounted() {
-    this.updateRouter()
+    this.updateRouter();
+  },
+  created() {
+    window.onpopstate = () => {
+      this.vindex = this.lastindex
+    };    
   }
 };
 </script>
@@ -122,7 +139,7 @@ export default {
             margin-top: 15mm; 
         }
         .no-print {
-            display: none;
+            display: none !important;
             padding: 0 !important;
         }
         .nobreak
@@ -135,5 +152,12 @@ export default {
           page-break-before:always;
           break-before:always;
         }
+        .print-only { }
+    }
+    @media screen {
+        .print-only 
+        { 
+          display: none;
+        }             
     }
 </style>

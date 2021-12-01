@@ -24,8 +24,8 @@ export default class BravosSourcesDAO {
     * @param {string} isotope
     * @param {float} half_life
     * @param {string} serial
-    * @param {object} calibration
-    * @param {object} ten_ci_date
+    * @param {Date} calibration
+    * @param {Date} ten_ci_date
     * @param {float} curie
     * @param {float} gbq
     * @param {float} air_kerma_m
@@ -111,7 +111,7 @@ export default class BravosSourcesDAO {
 
     static async checkIfSourceExists(sid) {
         try {
-            const response = await bravos_sources.findOne({_id: sid._id})
+            const response = await bravos_sources.findOne({'_id': sid._id})
             console.log(response)
             return response
         } catch (e) {

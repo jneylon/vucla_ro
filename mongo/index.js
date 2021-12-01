@@ -2,6 +2,8 @@ import dotenv from 'dotenv'
 import app from './app.js'
 import MongoClient from 'mongodb'
 import BravosSourcesDAO from './dao/bravos_sources.js';
+import PQRTemplatesDAO from './dao/pqr_templates.js';
+import PQRPatientsDAO from './dao/pqr_patients.js';
 
 dotenv.config()
 
@@ -24,6 +26,8 @@ MongoClient.connect(url, {
     console.log(`Connected: ${url}`)
     console.log(`Database: ${dbName}`)
     await BravosSourcesDAO.injectDB(client)
+    await PQRTemplatesDAO.injectDB(client)
+    await PQRPatientsDAO.injectDB(client)
     app.listen(port, host, () => {
         console.log(`Server listening on http://${host}:${port}`);
       });

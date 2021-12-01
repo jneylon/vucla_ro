@@ -2,131 +2,147 @@
     <div id="tlog">
         <v-navigation-drawer 
             app 
-            floating 
             clipped
-            permanent 
+            permanent
+            :mini-variant="mini"
+            mini-variant-width="80"
+            stateless
             dark 
             width="320" 
             class="no-print">
             <v-list-item>
                 <v-list-item-content>
-                  <v-list-item-title class="title">
-                    Controls
-                  </v-list-item-title>
+                    <v-icon @click="mini=!mini">mdi-unfold-more-vertical</v-icon>
                 </v-list-item-content>
             </v-list-item>
             <v-divider></v-divider>
             <v-list>
-                <v-list-item>
-                    <v-btn 
-                        rounded 
-                        color="#2774AE"
-                        dark 
-                        block
-                        @click="loading=true,parseFilename(),importBinary()">Import File</v-btn>
+                <v-list-item @click="loading=true,parseFilename(),importBinary()">
+                    <v-list-item-icon><v-icon>mdi-file-import</v-icon></v-list-item-icon>
+                    <v-list-item-title>Import Log File</v-list-item-title>
                 </v-list-item>
-                <v-list-item>
-                    <v-btn 
-                        rounded 
-                        color="#2774AE"
-                        dark 
-                        block
-                        :disabled="!imported"
-                        @click="analyzing=true,analyzeLogs(),generateCharts()">Analyze Log</v-btn>
+                <v-list-item
+                    :disabled="!imported"
+                    @click="analyzing=true,analyzeLogs(),generateCharts()">
+                    <v-list-item-icon><v-icon :disabled="!imported">mdi-cog-clockwise</v-icon></v-list-item-icon>
+                    <v-list-item-title>Analyze Logs</v-list-item-title>
                 </v-list-item>
-                <v-list-item>
-                    <v-btn 
-                        rounded 
-                        color="#2774AE" 
-                        dark 
-                        block
-                        :disabled="!analyzed"
-                        @click="minimize=true"
-                        onclick="window.print()">Print to PDF</v-btn>
+                <v-list-item 
+                    :disabled="!analyzed" 
+                    @click="print2pdf()">
+                    <v-list-item-icon><v-icon :disabled="!analyzed">mdi-printer</v-icon></v-list-item-icon>
+                    <v-list-item-title>Print to PDF</v-list-item-title>
                 </v-list-item>
             </v-list>
             <v-divider></v-divider>
-            <v-card justify="center" outlined v-show="imported">
-                <v-card-title>Target Deviations:</v-card-title>
-                <v-card-text>
-                    <br>
-                    <v-slider
-                        v-model="toler.pos"
-                        min="0.01"
-                        max="0.50"
-                        step="0.01"
-                        label="Leaf Position (cm)"
-                        color="light-green"
-                        :thumb-size="30"
-                        track-color="red lighten-1"
-                        thumb-color="light-green"
-                        thumb-label="always"
-                    ></v-slider>
-                    <br>
-                    <v-slider
-                        v-model="toler.vel"
-                        min="0.10"
-                        max="1.00"
-                        step="0.05"
-                        label="Leaf Speed (cm/s)"
-                        color="light-green"
-                        thumb-size="30"
-                        track-color="red lighten-1"
-                        thumb-color="light-green"
-                        thumb-label="always"
-                    ></v-slider>
-                </v-card-text>
-            </v-card>
+            <v-list v-show="imported">
+                <v-list-group 
+                    :value="false"
+                    @click="mini=false">
+                    <template v-slot:activator>
+                        <v-list-item-icon><v-icon>mdi-middleware-outline</v-icon></v-list-item-icon>
+                        <v-list-item-title>Leaf Tolerances</v-list-item-title>
+                    </template>
+                    <v-list-item>
+                        <v-list-item-content>
+                            <v-slider
+                                v-model="toler.pos"
+                                min="0.01"
+                                max="0.50"
+                                step="0.01"
+                                label="Pos (cm)"
+                                color="light-green"
+                                :thumb-size="25"
+                                track-color="red lighten-1"
+                                thumb-color="light-green"
+                                thumb-label="always"
+                                height="65"
+                            ></v-slider>
+                        </v-list-item-content>
+                    </v-list-item>
+                    <v-list-item>
+                        <v-list-item-content>
+                            <v-slider
+                                v-model="toler.vel"
+                                min="0.10"
+                                max="1.00"
+                                step="0.05"
+                                label="Speed (cm/s)"
+                                color="light-green"
+                                :thumb-size="25"
+                                track-color="red lighten-1"
+                                thumb-color="light-green"
+                                thumb-label="always"
+                                height="65"
+                            ></v-slider>
+                        </v-list-item-content>
+                    </v-list-item>
+                </v-list-group>
+            </v-list>
             <v-divider></v-divider>
             <v-list v-show="analyzed">
                 <v-list-item>
-                    <v-switch 
-                        v-model="p_switch1" 
-                        color="#2774AE"
-                        label="Leaf Pos. Error Histogram">
-                    </v-switch>
+                    <v-list-item-icon>
+                        <v-switch 
+                            v-model="p_switch1" 
+                            color="#2774AE">
+                        </v-switch>
+                    </v-list-item-icon>
+                    <v-list-item-title>Leaf Pos. Error Histogram</v-list-item-title>
                 </v-list-item>
                 <v-list-item>
-                    <v-switch 
-                        v-model="p_switch2" 
-                        color="#2774AE"
-                        label="Leaf Speed Error Histogram">
-                    </v-switch>
+                    <v-list-item-icon>
+                        <v-switch 
+                            v-model="p_switch2" 
+                            color="#2774AE">
+                        </v-switch>
+                    </v-list-item-icon>
+                    <v-list-item-title>Leaf Speed Error Histogram</v-list-item-title>
                 </v-list-item>
                 <v-list-item>
-                    <v-switch 
-                        v-model="p_switch4" 
-                        color="#2774AE"
-                        label="MU Comparison Plot">
-                    </v-switch>
+                    <v-list-item-icon>
+                        <v-switch 
+                            v-model="p_switch4" 
+                            color="#2774AE">
+                        </v-switch>
+                    </v-list-item-icon>
+                    <v-list-item-title>MU Comparison Plot</v-list-item-title>
                 </v-list-item>
                 <v-list-item>
-                    <v-switch 
-                        v-model="p_switch3" 
-                        color="#2774AE"
-                        label="Position Error per Leaf">
-                    </v-switch>
+                    <v-list-item-icon>
+                        <v-switch 
+                            v-model="p_switch3" 
+                            color="#2774AE">
+                        </v-switch>
+                    </v-list-item-icon>
+                    <v-list-item-title>Position Error per Leaf</v-list-item-title>
                 </v-list-item>
                 <v-list-item>
-                    <v-switch 
-                        v-model="p_switch5" 
-                        color="#2774AE"
-                        label="Speed Error per Leaf">
-                    </v-switch>
+                    <v-list-item-icon>
+                        <v-switch 
+                            v-model="p_switch5" 
+                            color="#2774AE">
+                        </v-switch>
+                    </v-list-item-icon>
+                    <v-list-item-title>Speed Error per Leaf</v-list-item-title>
                 </v-list-item>
                 <v-list-item>
-                    <v-switch 
-                        v-model="p_switch6" 
-                        color="#2774AE"
-                        label="BEV of the MLC">
-                    </v-switch>
+                    <v-list-item-icon>
+                        <v-switch 
+                            v-model="p_switch6" 
+                            color="#2774AE">
+                        </v-switch>
+                    </v-list-item-icon>
+                    <v-list-item-title>BEV of the MLC</v-list-item-title>
                 </v-list-item>
                 <v-list-item>
-                    <v-switch 
-                        v-model="t_switch1" 
-                        color="#2774AE"
-                        label="Results Data Table">
-                    </v-switch>
+                    <v-list-item-icon>
+                        <v-switch 
+                            v-model="t_switch1" 
+                            color="#2774AE">
+                        </v-switch>
+                    </v-list-item-icon>
+                    <v-list-item-title>Results Data Table</v-list-item-title>
                 </v-list-item>
             </v-list>
         </v-navigation-drawer>
@@ -158,7 +174,7 @@
                     <h2 style="text-align:center;">Varian Truebeam Tracjectory Log File Analysis</h2>
                 </v-col>
             </v-row>
-            <v-row style="page-break-after:always;">
+            <v-row>
                 <v-col cols="12">
                     <v-card outlined>
                         <v-card-title>Plan Information:</v-card-title>
@@ -388,6 +404,7 @@ export default {
     data() {
         return {
             message: '',
+            mini: true,
             loading: false,
             imported: false,
             analyzing: false,
@@ -1562,6 +1579,9 @@ export default {
                   clearInterval(this.motion);
               }
           },
+          print2pdf() {
+              window.print();
+          }
     },
     filters: {
           onlysigfigs: function (value, figs) {
@@ -1582,6 +1602,10 @@ export default {
     },
     components: {
         bevDisplay,
+    },
+    beforeRouteLeave( to, from, next ) {
+        document.title = "vuclaro";
+        next()
     }
 }
 </script>

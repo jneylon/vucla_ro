@@ -19,18 +19,6 @@
             A collection of web tools for clinical automation, 
             <br>data visualization, and research facilitation.
           </p>
-          <!-- v-sparkline
-            :value="value"
-            :gradient="gradient"
-            smooth="10"
-            padding="15"
-            line-width="3"
-            stroke-linecap="round"
-            gradient-direction="right"
-            type="trend"
-            height="25"
-            auto-draw
-          ></v-sparkline -->
         </v-col>
       </v-row>
       <v-row>
@@ -51,7 +39,6 @@
       class="no-print">
       <v-col
         class="text-center white--text"
-        cols="12"
         >
           <h3>Comments, Questions, or Requests?</h3>
           <br>Address to <strong>Jack Neylon, PhD, DABR  |  jneylon@mednet.ucla.edu</strong>
