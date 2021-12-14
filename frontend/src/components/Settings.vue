@@ -474,7 +474,7 @@
                     <v-btn
                         color="#2774AE" 
                         text
-                        :disabled="cc_exists"
+                        :disabled="cc_exists || !cc_imported"
                         @click="cc_dialog=false;cc_imported=false;post_new_cc_template()"
                         >
                         Save
