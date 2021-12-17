@@ -293,9 +293,9 @@ export default {
         fetch("/api/bravos_sources/active")
             .then(response => response.json())
             .then(result => {
-                console.log(result);
+                //console.log(result);
                 this.source = result.source[0];
-                console.log(this.source);
+                //console.log(this.source);
             })
     },
     methods: {
@@ -333,7 +333,7 @@ export default {
             if (!this.chosenFile) {
                 return;
             }
-            console.log(this.chosenFile.name);
+            //console.log(this.chosenFile.name);
 
             var reader = new FileReader();
             reader.readAsText(this.chosenFile);

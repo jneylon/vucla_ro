@@ -613,7 +613,7 @@
             this.new_source.active = this.set_active;
         },
         post_new_source () {
-            console.log(this.new_source);
+            //console.log(this.new_source);
 
             fetch("/api/bravos_sources/new", {
                 method: "POST",
@@ -762,7 +762,7 @@
             _request += this.cc_chosenFolder;
             _request += "/";
             _request += this.cc_chosenTemplate;
-            console.log(_request);
+            //console.log(_request);
 
             fetch(_request)
                 .then(response => response.json())
@@ -770,7 +770,7 @@
                     //console.log(result);
                     if (result.template.length > 0) { 
                         console.log("Template found."); 
-                        console.log(result.template);
+                        //console.log(result.template);
                         this.cc_exists = true;                      
                         return true;
                     } else {
@@ -815,7 +815,7 @@
             fetch("/api/pqr_templates/folders")
                 .then(response => response.json())
                 .then(result => {
-                    console.log(result);
+                    //console.log(result);
                     this.messages = result;
                     this.cc_folders = result.folders;
                 })
@@ -827,7 +827,7 @@
             fetch(_request)
                 .then(response => response.json())
                 .then(result => {
-                    console.log(result);
+                    //console.log(result);
                     this.messages = result;
                     this.cc_templates = result.templates;
                 })
@@ -840,7 +840,7 @@
             if (this.delete_template_forever) {
                 var _request = "/api/pqr_templates/delete/";
                 _request += this.sel_template._id;
-                console.log(_request);
+                //console.log(_request);
 
                 fetch(_request, { method: "DELETE" } )
                 .then(response => response.json())

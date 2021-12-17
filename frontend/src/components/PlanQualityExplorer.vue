@@ -126,7 +126,7 @@ export default {
             fetch("/api/pqr_templates/folders")
                 .then(response => response.json())
                 .then(result => {
-                    console.log(result);
+                    //console.log(result);
                     this.messages = result;
                     this.cc_folders = result.folders;
                 })
@@ -138,7 +138,7 @@ export default {
             fetch(_request)
                 .then(response => response.json())
                 .then(result => {
-                    console.log(result);
+                    //console.log(result);
                     this.messages = result;
                     this.cc_templates = result.templates;
                 })

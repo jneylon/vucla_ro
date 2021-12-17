@@ -403,7 +403,7 @@ export default {
             if (!this.chosenFile) {
                 return;
             }
-            console.log(this.chosenFile.name);
+            //console.log(this.chosenFile.name);
 
             var reader = new FileReader();
             reader.readAsText(this.chosenFile);
@@ -428,7 +428,7 @@ export default {
                     this.plansum = true;
                     this.constraints = this.jsondata.CalculatedConstraints;
                 }
-                console.log(this.constraints);
+                //console.log(this.constraints);
 
                 this.match_folders();
 
@@ -446,7 +446,7 @@ export default {
             fetch("/api/pqr_templates/folders")
                 .then(response => response.json())
                 .then(result => {
-                    console.log(result);
+                    //console.log(result);
                     this.messages = result;
                     this.cc_folders = result.folders;
                 })
@@ -468,12 +468,12 @@ export default {
             fetch(_request)
                 .then(response => response.json())
                 .then(result => {
-                    console.log(result);
+                    //console.log(result);
                     this.messages = result;
                     if (result.template.length > 0) {
                         this.cc_matchedTemplate = result.template[0];
                     }
-                    console.log(this.cc_matchedTemplate);
+                    //console.log(this.cc_matchedTemplate);
                 })
         },
         retrieve_templates () {
@@ -484,10 +484,10 @@ export default {
             fetch(_request)
                 .then(response => response.json())
                 .then(result => {
-                    console.log(result);
+                    //console.log(result);
                     this.messages = result;
                     this.cc_templates = result.templates;
-                    console.log(this.cc_templates);
+                    //console.log(this.cc_templates);
                     this.match_templates();
                 })
         },
@@ -515,13 +515,13 @@ export default {
               this.$set(this.keys, key, key);
         },
         find_indices() {
-            console.log(this.cc_matchedTemplate);
-              for (var i=0; i<this.constraints.length; i++) {
-                  this.find_index(this.constraints[i], this.cc_matchedTemplate.constraints, i);
-              }
+            //console.log(this.cc_matchedTemplate);
+            for (var i=0; i<this.constraints.length; i++) {
+                this.find_index(this.constraints[i], this.cc_matchedTemplate.constraints, i);
+            }
         }, 
         toggleKey(i) {
-              console.log("Toggle Key Event Triggered.");
+              //console.log("Toggle Key Event Triggered.");
               let newkey = this.keys[i] * -1;
               this.$set(this.keys,i,newkey);
         },
@@ -532,12 +532,12 @@ export default {
             _request += this.jsondata.Course;
             _request += "/";
             _request += this.jsondata.PlanId;
-            console.log(_request);
+            //console.log(_request);
 
             fetch(_request)
                 .then(response => response.json())
                 .then(result => {
-                    console.log(result);
+                    //console.log(result);
                     if (result.patient) {
                         return true;
                     } else {
@@ -568,7 +568,7 @@ export default {
                     "total_dose": rx_dose,
                     "dose_units": this.jsondata.EclipseDoseUnit
                 }
-                console.log(new_script);
+                //console.log(new_script);
                 return new_script;
             }
         },
@@ -593,7 +593,7 @@ export default {
                     "match_indices": this.indices,
                     "constraints": this.constraints
                 }
-                console.log(new_patient);
+                //console.log(new_patient);
 
                 fetch("/api/pqr_patients/new", {
                     method: "POST",

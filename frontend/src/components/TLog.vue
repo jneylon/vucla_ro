@@ -717,61 +717,61 @@ export default {
                   var buf = new jDataView(array);
                   
                   var signature = buf.getString(16);
-                  console.log("signature : " + signature + "(" + buf.tell() + ")");
+                  //console.log("signature : " + signature + "(" + buf.tell() + ")");
                   var version = buf.getString(16);
-                  console.log("version : " + version + "(" + buf.tell() + ")");
+                  //console.log("version : " + version + "(" + buf.tell() + ")");
                   var header_size = buf.getInt16(32, true);
-                  console.log("header_size : " + header_size + "(" + buf.tell() + ")");
+                  //console.log("header_size : " + header_size + "(" + buf.tell() + ")");
 
                   var sample_interval = buf.getInt8(36, true);
                   this.interval = sample_interval;
-                  console.log("sample_interval : " + sample_interval + "(" + buf.tell() + ")");
+                  //console.log("sample_interval : " + sample_interval + "(" + buf.tell() + ")");
 
                   var num_axes = buf.getInt8(40, true);
-                  console.log("num_axes : " + num_axes + "(" + buf.tell() + ")");
+                  //console.log("num_axes : " + num_axes + "(" + buf.tell() + ")");
 
                   var enum_size = num_axes*4;
                   var update_ind = enum_size*2; 
-                  console.log("update_ind : " + update_ind);
+                  //console.log("update_ind : " + update_ind);
 
                   var enum_array = array.slice(44, 44 + enum_size);
                   var enum_data = new Int32Array(enum_array);
-                  console.log("Enum Array: " + enum_data);
+                  //console.log("Enum Array: " + enum_data);
 
                   var sample_array = array.slice(44 + enum_size, 44 + 2*enum_size);
                   var sample_data = new Int32Array(sample_array);
-                  console.log("Sample Array: " + sample_data);
+                  //console.log("Sample Array: " + sample_data);
                   
                   var scale = buf.getInt8(update_ind + 44, true);
-                  console.log("scale id : " + scale + "(" + buf.tell() + ")");
+                  //console.log("scale id : " + scale + "(" + buf.tell() + ")");
                   var axis_scale = "Modified IEC 61217";
                   if (scale==1) {axis_scale = "Machine Scale"}
-                  console.log("axis_scale : " + axis_scale);
+                  //console.log("axis_scale : " + axis_scale);
 
                   var num_sub_beams = buf.getInt8(update_ind + 48, true);
-                  console.log("num_sub_beams : " + num_sub_beams + "(" + buf.tell() + ")");
+                  //console.log("num_sub_beams : " + num_sub_beams + "(" + buf.tell() + ")");
 
                   var num_snaps = buf.getInt32(update_ind + 56, true);
                   this.snaps = num_snaps;
-                  console.log("num_snaps : " + num_snaps + "(" + buf.tell() + ")");
+                  //console.log("num_snaps : " + num_snaps + "(" + buf.tell() + ")");
 
                   var model = buf.getInt8(update_ind + 60, true);
-                  console.log("model id : " + model + "(" + buf.tell() + ")");
+                  //console.log("model id : " + model + "(" + buf.tell() + ")");
                   var mlc_model = "NDS 120 HD";
                   if (model == 2) {mlc_model = "NDS 120"}
-                  console.log("mlc_model : " + mlc_model);
+                  //console.log("mlc_model : " + mlc_model);
 
                   var cp = buf.getInt16(header_size, true);
-                  console.log("cp : " + cp + "(" + buf.tell() + ")");
+                  //console.log("cp : " + cp + "(" + buf.tell() + ")");
                 
                   this.total_mu = buf.getFloat32(header_size + 4, true);
-                  console.log("mu : " + this.total_mu + "(" + buf.tell() + ")");
+                  //console.log("mu : " + this.total_mu + "(" + buf.tell() + ")");
                 
                   var rad_time = buf.getFloat32(header_size + 8, true);
-                  console.log("rad_time : " + rad_time + "(" + buf.tell() + ")");
+                  //console.log("rad_time : " + rad_time + "(" + buf.tell() + ")");
 
                   this.field = buf.getString(32, header_size + 16);
-                  console.log("field_name : " + this.field + "(" + buf.tell() + ")");
+                  //console.log("field_name : " + this.field + "(" + buf.tell() + ")");
 
                   var num_values = (num_axes + 122 - 1)*2;
                   var axis_data_offset = header_size + num_sub_beams * 560;
@@ -833,15 +833,15 @@ export default {
                   this.expected.couch.roll = axis_data[22];
                   this.actual.couch.roll = axis_data[23];
                   
-                  console.log("Collimator: " + this.actual.collimator + " / " + this.expected.collimator);
-                  console.log("Gantry: " + this.actual.gantry + " / " + this.expected.gantry);
-                  console.log("Y1: " + this.actual.jaw.y1 + " / " + this.expected.jaw.y1);
-                  console.log("Y2: " + this.actual.jaw.y2 + " / " + this.expected.jaw.y2);
-                  console.log("X1: " + this.actual.jaw.x1 + " / " + this.expected.jaw.x1);
-                  console.log("X2: " + this.actual.jaw.x2 + " / " + this.expected.jaw.x2);
-                  console.log("Couch: " + this.actual.couch.lat + "/" + this.actual.couch.long + "/" + this.actual.couch.vert);
-                  console.log("Couch: " + this.expected.couch.lat + "/" + this.expected.couch.long + "/" + this.expected.couch.vert);
-                  console.log("Couch Rotation: " + this.actual.couch.rot + " / " + this.expected.couch.rot);
+                  //console.log("Collimator: " + this.actual.collimator + " / " + this.expected.collimator);
+                  //console.log("Gantry: " + this.actual.gantry + " / " + this.expected.gantry);
+                  //console.log("Y1: " + this.actual.jaw.y1 + " / " + this.expected.jaw.y1);
+                  //console.log("Y2: " + this.actual.jaw.y2 + " / " + this.expected.jaw.y2);
+                  //console.log("X1: " + this.actual.jaw.x1 + " / " + this.expected.jaw.x1);
+                  //console.log("X2: " + this.actual.jaw.x2 + " / " + this.expected.jaw.x2);
+                  //console.log("Couch: " + this.actual.couch.lat + "/" + this.actual.couch.long + "/" + this.actual.couch.vert);
+                  //console.log("Couch: " + this.expected.couch.lat + "/" + this.expected.couch.long + "/" + this.expected.couch.vert);
+                  //console.log("Couch Rotation: " + this.actual.couch.rot + " / " + this.expected.couch.rot);
 
                   this.actual.mu = new Float32Array(num_snaps);
                   this.expected.mu = new Float32Array(num_snaps);
@@ -930,8 +930,8 @@ export default {
                     }
                   this.actual.cps.push(cpa_now);
 
-                  console.log(this.expected.cps);
-                  console.log(this.actual.cps);
+                  //console.log(this.expected.cps);
+                  //console.log(this.actual.cps);
                   // console.table([this.actual.mlc.leaf_a,this.expected.mlc.leaf_a]);
 
                   this.loading = false;
@@ -1491,7 +1491,7 @@ export default {
                 wid[i] = 0.55;
             }
 
-            console.log(this.leaves);
+            //console.log(this.leaves);
             this.bev_chart.traces[0].width = wid;
             this.bev_chart.traces[0].y = this.leaves;
             this.bev_chart.traces[0].x = Array.from(this.expected.mlc.leaf_a.slice(0, 60), function rescale(pos) { return 20 - pos; }); 
