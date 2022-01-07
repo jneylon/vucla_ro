@@ -547,6 +547,7 @@
             cc_exists: false,
             delete_template_confirmation: false,
             delete_template_forever: false,
+            laterality: null,
         }
     },
     mounted() {
@@ -614,7 +615,6 @@
         },
         post_new_source () {
             //console.log(this.new_source);
-
             fetch("/api/bravos_sources/new", {
                 method: "POST",
                 body: JSON.stringify(this.new_source),
@@ -635,7 +635,7 @@
         },
         delete_source (id) {
             if (this.delete_forever) {
-                console.log(id);
+                //console.log(id);
                 var _message = {
                     "_id": id
                 }
@@ -661,7 +661,7 @@
             }
         },
         set_source_as_active (id) {
-            console.log('Setting Active: ' + id);
+            //console.log('Setting Active: ' + id);
             var _message = {
                 "_id": id
             }
@@ -712,7 +712,7 @@
             fetch("/api/bravos_sources")
                 .then(response => response.json())
                 .then(result => {
-                    console.log(result);
+                    //console.log(result);
                     this.messages = result;
                     this.sources = result.sources;
                 })
@@ -753,6 +753,21 @@
                 } else {
                     this.cc_chosenConstraints = jsondata.CalculatedConstraints;
                 }
+
+                if (this.cc_chosenTemplate === "Breasts_3Fields")
+                {
+                    this.laterality = "Both";
+                }
+                else if (this.cc_chosenTemplate.includes("Left")) {
+                    this.laterality = "Left";
+                }
+                else if (this.cc_chosenTemplate.includes("Right")) {
+                    this.laterality = "Right";
+                }
+                else {
+                    this.laterality = "None";
+                }
+
                 //console.log(this.cc_chosenConstraints);
                 this.cc_imported = true;
               }
@@ -770,11 +785,11 @@
                     //console.log(result);
                     if (result.template.length > 0) { 
                         console.log("Template found."); 
-                        //console.log(result.template);
+                        console.log(result.template);
                         this.cc_exists = true;                      
                         return true;
                     } else {
-                        console.log("Template NOT found.");
+                        //console.log("Template NOT found.");
                         this.cc_exists = false;
                         return false;
                     }
@@ -788,6 +803,7 @@
                 var new_template = {
                     "folder": this.cc_chosenFolder,
                     "template": this.cc_chosenTemplate,
+                    "laterality": this.laterality,
                     "constraints": this.cc_chosenConstraints
                 }
 

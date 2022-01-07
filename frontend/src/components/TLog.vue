@@ -717,9 +717,10 @@ export default {
                   var buf = new jDataView(array);
                   
                   var signature = buf.getString(16);
-                  //console.log("signature : " + signature + "(" + buf.tell() + ")");
+                  console.log("signature : " + signature + "(" + buf.tell() + ")");
+                  
                   var version = buf.getString(16);
-                  //console.log("version : " + version + "(" + buf.tell() + ")");
+                  console.log("version : " + version + "(" + buf.tell() + ")");
                   var header_size = buf.getInt16(32, true);
                   //console.log("header_size : " + header_size + "(" + buf.tell() + ")");
 
@@ -736,17 +737,17 @@ export default {
 
                   var enum_array = array.slice(44, 44 + enum_size);
                   var enum_data = new Int32Array(enum_array);
-                  //console.log("Enum Array: " + enum_data);
+                  console.log("Enum Array: " + enum_data);
 
                   var sample_array = array.slice(44 + enum_size, 44 + 2*enum_size);
                   var sample_data = new Int32Array(sample_array);
-                  //console.log("Sample Array: " + sample_data);
+                  console.log("Sample Array: " + sample_data);
                   
                   var scale = buf.getInt8(update_ind + 44, true);
                   //console.log("scale id : " + scale + "(" + buf.tell() + ")");
                   var axis_scale = "Modified IEC 61217";
                   if (scale==1) {axis_scale = "Machine Scale"}
-                  //console.log("axis_scale : " + axis_scale);
+                  console.log("axis_scale : " + axis_scale);
 
                   var num_sub_beams = buf.getInt8(update_ind + 48, true);
                   //console.log("num_sub_beams : " + num_sub_beams + "(" + buf.tell() + ")");
@@ -759,16 +760,16 @@ export default {
                   //console.log("model id : " + model + "(" + buf.tell() + ")");
                   var mlc_model = "NDS 120 HD";
                   if (model == 2) {mlc_model = "NDS 120"}
-                  //console.log("mlc_model : " + mlc_model);
+                  console.log("mlc_model : " + mlc_model);
 
                   var cp = buf.getInt16(header_size, true);
-                  //console.log("cp : " + cp + "(" + buf.tell() + ")");
+                  console.log("cp : " + cp + "(" + buf.tell() + ")");
                 
                   this.total_mu = buf.getFloat32(header_size + 4, true);
                   //console.log("mu : " + this.total_mu + "(" + buf.tell() + ")");
                 
                   var rad_time = buf.getFloat32(header_size + 8, true);
-                  //console.log("rad_time : " + rad_time + "(" + buf.tell() + ")");
+                  console.log("rad_time : " + rad_time + "(" + buf.tell() + ")");
 
                   this.field = buf.getString(32, header_size + 16);
                   //console.log("field_name : " + this.field + "(" + buf.tell() + ")");
@@ -932,7 +933,7 @@ export default {
 
                   //console.log(this.expected.cps);
                   //console.log(this.actual.cps);
-                  // console.table([this.actual.mlc.leaf_a,this.expected.mlc.leaf_a]);
+                  //console.table([this.actual.mlc.leaf_a,this.expected.mlc.leaf_a]);
 
                   this.loading = false;
                   this.imported = true;

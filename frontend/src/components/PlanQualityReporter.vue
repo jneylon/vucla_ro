@@ -198,7 +198,7 @@
                     </v-card>  
                 </v-col> 
             </v-row>
-            <v-row>
+            <v-row class="nobreak">
                 <v-col>
                     <v-card>
                         <v-card-title>Plan Quality Report - {{ templateName }}</v-card-title>
@@ -229,7 +229,7 @@
                                             <td width="120px" v-show="p_switch3" class="text-center no-print">
                                                 <v-select
                                                     v-model="indices[item.Priority]"
-                                                    @change="toggleKey(item.Priority)"
+                                                    @change="toggleKey(item.Priority);updateMatches(item.Priority)"
                                                     class="text-caption"
                                                     :items="cc_matchedTemplate.constraints"
                                                     item-text="ConstraintToPresent"
@@ -239,23 +239,16 @@
                                                 </v-select>
                                                 <!-- :disabled="indices[item.Priority] != -1" -->
                                             </td>
-                                            <td class="text-center text-caption font-weight-bold" v-if="plansum" :class=fonts[item.PassFail]>{{ item.Plan1Actual }}</td>
-                                            <td class="text-center text-caption font-weight-bold" v-else :class=fonts[item.PassFail]>{{ item.Actual }}</td>
-                                            <!-- td class="text-center text-caption" 
-                                                :key="keys[item.Priority]"
-                                                v-html="findStatistics(item,stats,indices[item.Priority],heartidx)" 
-                                                v-show="p_switch1">
-                                            </td >
-                                            <td v-show="p_switch2">
-                                                <stat-range v-if="indices[item.Priority] != -1"
+                                            <td class="text-center text-caption font-weight-bold" :class=fonts[item.PassFail]>{{ item.Actual }}</td>
+                                            <td class="text-center text-caption" v-if=stats>{{stats[item.PriorityMatch].mean.toFixed(2)}} {{plusminus}} {{stats[item.PriorityMatch].std.toFixed(2)}}</td>
+                                            <td v-if=stats v-show="p_switch2">
+                                                <pqrBoxplot v-if="indices[item.Priority] != -1"
                                                     :key="keys[item.Priority]"
-                                                    :p_psum="plansum"
                                                     :p_item="item"
-                                                    :p_stats="stats"
-                                                    :p_heart="heartidx"
-                                                    :p_indices="indices[item.Priority]">
-                                                </stat-range>
-                                            </td -->
+                                                    :p_stats="stats[item.PriorityMatch]"
+                                                    :p_flip="reporter">
+                                                </pqrBoxplot>
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </template>
@@ -323,7 +316,7 @@
                             <v-btn
                                 color="#2774AE" 
                                 text
-                                @click="pq_confirmation=false;find_indices();retrieve_pqdata()"
+                                @click="pq_confirmation=false;find_indices();retrieve_patient_count();retrieve_stats()"
                                 >
                                 Confirm
                             </v-btn>
@@ -344,6 +337,8 @@
 </template>
 
 <script>
+import pqrBoxplot from '../components/pqrBoxplot';
+
 export default {
     name: 'PlanQualityReporter',
     data() {
@@ -366,6 +361,7 @@ export default {
             mrn: null,
             prescription: null,
             plan_info: null,
+            laterality: 'unknown',
             constraints: null,
             stats: null,
             matchlist: [],
@@ -378,7 +374,8 @@ export default {
                 "Pass": "green--text",
                 "Fail": "red--text",
                 "Condition": "orange--text",
-                "Verified": "blue--text"
+                "Verified": "blue--text",
+                "": "black--text"
             },
             p_switch1: true,
             p_switch2: true,
@@ -393,6 +390,11 @@ export default {
             pt_counter: 0,
             error: "error",
             error_overlay: false,
+            already_in_db: false,
+            reporter: true,
+            fractional_dose: null,
+            fractions: null,
+            total_dose: null,
         }
     },
     mounted() {
@@ -414,19 +416,47 @@ export default {
                 this.cc_chosenFolder = templateName[1].slice(0, -1);
                 this.cc_chosenTemplate = templateName[0].slice(0, -1);
                 //console.log(this.jsondata);
-
                 this.patient = this.jsondata.PatientLastName + ", " + this.jsondata.PatientFirstName;
                 this.mrn = this.jsondata.PatientId;
-                this.prescription = this.jsondata.DoseInfos;
+                this.prescription = this.jsondata.DoseInfos;  
+                var rxinfo = this.jsondata.DoseInfos[1].split(' ');
+                var fractionaldose = rxinfo[0].split('c');
+                var fractions = rxinfo[2];
+                var totaldose = rxinfo[4].split('c');
+                this.fractional_dose = parseFloat(fractionaldose[0]);
+                this.fractions = parseInt(fractions[0]);
+                this.total_dose = parseFloat(totaldose[0]);          
                 this.notes = this.jsondata.ReportNotes;
                 this.plan_info = this.jsondata.Course + " - " + this.jsondata.PlanId;
-                if (!this.jsondata.CalculatedConstraints) {
+                if (this.jsondata.IsPlanSum) {
+                    this.plansum = true;
+                    this.constraints = this.jsondata.CalculatedConstraints;
+                    for (var i=0; i<this.constraints.length; i++) {
+                        this.constraints[i]["Actual"] = this.constraints[i].Plan1Actual;
+                        this.constraints[i]["ActualValue"] = this.constraints[i].Plan1ActualValue;
+                        delete this.constraints[i].Plan1Actual;
+                        delete this.constraints[i].Plan1ActualValue;
+                        delete this.constraints[i].Plan2Actual;
+                        delete this.constraints[i].Plan2ActualValue;
+                        delete this.constraints[i].DifferenceCompare;
+                        delete this.constraints[i].DifferenceCompareNumeric;
+                        delete this.constraints[i].PassFailPlanCompare;
+                        delete this.constraints[i].PassFailPlan2;
+                    }
+                    if (this.cc_chosenTemplate === "Breasts_3Fields")
+                    {
+                        if (this.constraints[0].StructurePlan.includes("_R"))
+                        {
+                            this.laterality = "Right";
+                        } else {
+                            this.laterality = "Left";
+                        }
+                    }
+                }
+                else {
                     this.plansum = false;
                     var plandata = this.jsondata.PlanData;
                     this.constraints = plandata[0].CalculatedConstraints;
-                } else {
-                    this.plansum = true;
-                    this.constraints = this.jsondata.CalculatedConstraints;
                 }
                 //console.log(this.constraints);
 
@@ -472,8 +502,30 @@ export default {
                     this.messages = result;
                     if (result.template.length > 0) {
                         this.cc_matchedTemplate = result.template[0];
+                        if (this.laterality === "unknown") {
+                            this.laterality = this.cc_matchedTemplate.laterality;
+                        }
                     }
                     //console.log(this.cc_matchedTemplate);
+                })
+        },
+        retrieve_patient_count () {
+            this.pt_counter = 0;
+
+            var _request = "/api/pqr_patients/count/";
+                        _request += this.cc_matchedFolder;
+                        _request += "/";
+                        _request += this.cc_matchedTemplate.template;
+                        _request += "/";
+                        _request += this.laterality;
+                        _request += "/";
+                        _request += this.fractional_dose;
+
+            fetch(_request)
+                .then(response => response.json())
+                .then(result => {
+                    //console.log(result);
+                    this.pt_counter = result.pt_count;
                 })
         },
         retrieve_templates () {
@@ -491,8 +543,43 @@ export default {
                     this.match_templates();
                 })
         },
-        retrieve_pqdata () {
-            // stuff
+        retrieve_stats () {
+            this.stats = null;
+
+            var _request = "/api/pqr_patients/stats/";
+            _request += this.cc_matchedFolder;
+            _request += "/";
+            _request += this.cc_matchedTemplate.template;
+            _request += "/";
+            _request += this.laterality;
+            _request += "/";
+            _request += this.fractional_dose;
+
+            fetch(_request)
+                .then(response => response.json())
+                .then(result => {
+                    var temp = result.stats;
+                    if (temp.length > 0) {
+                        this.stats = {};
+                    }
+                    for (var i=0; i<temp.length; i++) {
+                        let mean = temp[i].data.reduce((a, b) => a + b) / temp[i].data.length;
+                        let sum_sq = 0.0;
+                        for (let j = 0; j < temp[i].data.length; j++)
+                        {
+                            sum_sq += Math.pow((temp[i].data[j] - mean), 2);
+                        }
+                        let std = Math.sqrt((sum_sq/temp[i].data.length));
+
+                        this.stats[temp[i]._id] = {
+                            ["data"]: temp[i].data,
+                            ["mean"]: mean,
+                            ["std"]: std
+                        }
+                    }
+                    //console.log(this.stats);
+                })
+
             this.analyzed = true;
         },
         find_index(item, stats, key) {
@@ -519,13 +606,21 @@ export default {
             for (var i=0; i<this.constraints.length; i++) {
                 this.find_index(this.constraints[i], this.cc_matchedTemplate.constraints, i);
             }
+            for (var i2=0; i2<this.constraints.length; i2++) {
+                this.constraints[i2]["PriorityMatch"] = this.indices[this.constraints[i2].Priority];
+            }
+            //console.log(this.constraints);
         }, 
+        updateMatches(i) {
+            this.constraints[i-1].PriorityMatch = this.indices[i];
+            //console.log(this.constraints);
+        },
         toggleKey(i) {
               //console.log("Toggle Key Event Triggered.");
               let newkey = this.keys[i] * -1;
               this.$set(this.keys,i,newkey);
         },
-        check_db_for_patient() {
+        async post_pqr_patient() {
             var _request = "/api/pqr_patients/match/";
             _request += this.mrn;
             _request += "/";
@@ -537,89 +632,60 @@ export default {
             fetch(_request)
                 .then(response => response.json())
                 .then(result => {
-                    //console.log(result);
+                    console.log(result);
                     if (result.patient) {
+                        console.log("This Patient/Course/Plan is already in the database.");
                         return true;
                     } else {
-                        return false;
-                    }
-                })
-        },
-        parse_prescriptions() {
-            if (this.plansum) {
-                // implement
-                return {};
-            } else {
-                var plan = '';
-                var fx = 0;
-                var fx_dose = 0;
-                var rx_dose = 0;
-                plan = this.prescription[0];
-                var params = this.prescription[1].split(" ");
-                var p1 = params[0].split("c");
-                fx_dose = p1[0].replace(/\s+/g, '');
-                fx = params[2].replace(/\s+/g, '');
-                var p2 = params[4].split("c");
-                rx_dose = p2[0].replace(/\s+/g, '');
-                var new_script = {
-                    "plan_id": plan,
-                    "fx_dose": fx_dose,
-                    "fractions": fx,
-                    "total_dose": rx_dose,
-                    "dose_units": this.jsondata.EclipseDoseUnit
-                }
-                //console.log(new_script);
-                return new_script;
-            }
-        },
-        post_pqr_patient() {
-            if (!this.check_db_for_patient()) {
-                var new_patient = {
-                    "mrn": this.mrn,
-                    "last_name": this.jsondata.PatientLastName,
-                    "first_name": this.jsondata.PatientFirstName,
-                    "dob": this.jsondata.PatientDateOfBirth,
-                    "sex": this.jsondata.PatientSex,
-                    "creation": this.jsondata.CurrentDate,
-                    "plan_id": this.jsondata.PlanId,
-                    "course_id": this.jsondata.Course,
-                    "dose_info": this.jsondata.DoseInfos,
-                    "rx": this.parse_prescriptions(),
-                    "plansum": this.jsondata.IsPlanSum,
-                    "folder": this.cc_chosenFolder,
-                    "template": this.cc_chosenTemplate,
-                    "match_folder": this.cc_matchedFolder,
-                    "match_template": this.cc_matchedTemplate.template,
-                    "match_indices": this.indices,
-                    "constraints": this.constraints
-                }
-                //console.log(new_patient);
+                        console.log("Posting new patient!")
+                        var new_patient = {
+                            "mrn": this.mrn,
+                            "last_name": this.jsondata.PatientLastName,
+                            "first_name": this.jsondata.PatientFirstName,
+                            "dob": this.jsondata.PatientDateOfBirth,
+                            "sex": this.jsondata.PatientSex,
+                            "creation": this.jsondata.CurrentDate,
+                            "plan_id": this.jsondata.PlanId,
+                            "course_id": this.jsondata.Course,
+                            "dose_info": this.jsondata.DoseInfos,
+                            "plansum": this.jsondata.IsPlanSum,
+                            "folder": this.cc_chosenFolder,
+                            "template": this.cc_chosenTemplate,
+                            "match_folder": this.cc_matchedFolder,
+                            "match_template": this.cc_matchedTemplate.template,
+                            "match_indices": this.indices,
+                            "constraints": this.constraints,
+                            "laterality": this.laterality,
+                            "fractional_dose": this.fractional_dose,
+                            "fractions": this.fractions,
+                            "total_dose": this.total_dose
+                        }
+                        //console.log(new_patient);
 
-                fetch("/api/pqr_patients/new", {
-                    method: "POST",
-                    body: JSON.stringify(new_patient),
-                    headers: {
-                        "content-type": "application/json"
+                        fetch("/api/pqr_patients/new", {
+                            method: "POST",
+                            body: JSON.stringify(new_patient),
+                            headers: {
+                                "content-type": "application/json"
+                            }
+                        })
+                        .then(response => response.json())
+                        .then(result => {
+                            if (result.error) {
+                                this.error = result.error;
+                                this.error_overlay = true;
+                            } else {
+                                this.error = "";
+                            }
+                        });
+                                return false;
                     }
                 })
-                .then(response => response.json())
-                .then(result => {
-                    if (result.error) {
-                        this.error = result.error;
-                        this.error_overlay = true;
-                    } else {
-                        this.error = "";
-                    }
-                });
-             } else {
-                 console.log("This Patient/Course/Plan is already in the database.");
-                 // implement patient update dialog
-             }
         },
-      },
-      computed: {
-      },
-      filters: {
+    },
+    computed: {
+    },
+    filters: {
           onlysigfigs: function (value, figs) {
               if (!value) return '0'
               value = value.toFixed(figs);
@@ -635,11 +701,14 @@ export default {
                 if (value > tolerance) return 'Fail'
                 if (value < tolerance) return 'Pass'
           },
-      },
-      beforeRouteLeave( to, from, next ) {
+    },
+    beforeRouteLeave( to, from, next ) {
         document.title = "vuclaro";
         next()
-      }
+    },
+    components: {
+        pqrBoxplot,
+    }
 }
 </script>
 
